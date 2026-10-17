@@ -1,0 +1,728 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Agent 工程师学习计划</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=Noto+Serif+SC:wght@600;900&display=swap">
+<style>
+html,body{margin:0}[hidden]{display:none!important}img{max-width:100%}
+:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+/* Layout: one reading column; a sticky phase rail; each week is a collapsible checklist card. Phase overview is styled like an agent trace log. */
+:root{
+  --bg:#F3F5F8; --surface:#FFFFFF; --surface-2:#E9EDF3; --ink:#121922; --ink-2:#44505F; --ink-3:#727D8F;
+  --line:#D7DCE5; --accent:#2B42AE; --accent-soft:#E3E8F8; --amber:#955500; --amber-soft:#FAEFDC;
+  --done:#1B7346; --done-soft:#DDF0E4; --shadow:0 1px 2px rgba(18,25,34,.06);
+  --f-display:"Noto Serif SC","Songti SC","STSong","SimSun",serif;
+  --f-body:-apple-system,BlinkMacSystemFont,"PingFang SC","Hiragino Sans GB","Microsoft YaHei","Noto Sans SC",sans-serif;
+  --f-mono:"JetBrains Mono",ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){
+  --bg:#0E1217; --surface:#151A21; --surface-2:#1C222B; --ink:#E5E9EF; --ink-2:#A8B1BE; --ink-3:#7A8494;
+  --line:#28303B; --accent:#93A3FF; --accent-soft:#222A47; --amber:#EFB25B; --amber-soft:#33260F;
+  --done:#5DC98F; --done-soft:#15301F; --shadow:none; color-scheme:dark; } }
+:root[data-theme="dark"]{
+  --bg:#0E1217; --surface:#151A21; --surface-2:#1C222B; --ink:#E5E9EF; --ink-2:#A8B1BE; --ink-3:#7A8494;
+  --line:#28303B; --accent:#93A3FF; --accent-soft:#222A47; --amber:#EFB25B; --amber-soft:#33260F;
+  --done:#5DC98F; --done-soft:#15301F; --shadow:none; color-scheme:dark; }
+
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:15px;line-height:1.7;-webkit-font-smoothing:antialiased}
+a{color:var(--accent);text-underline-offset:3px;text-decoration-thickness:1px}
+a:hover{text-decoration-thickness:2px}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:4px}
+.mono{font-family:var(--f-mono);font-variant-numeric:tabular-nums;letter-spacing:0}
+.wrap{max-width:1040px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:40px 72px}
+
+/* hero */
+.hero{display:grid;gap:18px;padding-bottom:28px}
+.eyebrow{margin:0;font-size:13px;color:var(--ink-3);letter-spacing:.04em}
+h1{font-family:var(--f-display);font-weight:900;font-size:clamp(2rem,5.2vw,3.1rem);line-height:1.15;margin:0;text-wrap:balance;letter-spacing:.01em}
+.dek{margin:0;max-width:40em;font-size:17px;color:var(--ink-2)}
+.controls{display:flex;flex-wrap:wrap;gap:12px 20px;align-items:end;padding:16px;border:1px solid var(--line);border-radius:12px;background:var(--surface);box-shadow:var(--shadow)}
+.field{display:grid;gap:4px;min-width:0}
+.field>span{font-size:12px;color:var(--ink-3);letter-spacing:.06em}
+.field input[type=date],.field select{font:inherit;font-size:14px;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:6px 10px;min-height:36px}
+.toggle{display:flex;gap:8px;align-items:center;font-size:14px;color:var(--ink-2);min-height:36px;cursor:pointer}
+.toggle input{width:16px;height:16px;accent-color:var(--accent)}
+.sync{margin-left:auto;display:flex;align-items:center;gap:8px;font-size:12.5px;color:var(--ink-3);min-height:36px}
+.sync i{width:8px;height:8px;border-radius:50%;background:var(--ink-3);flex:none}
+.sync[data-s="synced"] i{background:var(--done)}
+.sync[data-s="error"] i{background:#C2410C}
+.sync[data-s="connecting"] i{background:var(--amber)}
+.stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:1px;background:var(--line);border:1px solid var(--line);border-radius:12px;overflow:hidden}
+.stat{background:var(--surface);padding:12px 16px;display:grid;gap:2px;min-width:0}
+.stat b{font-family:var(--f-mono);font-weight:600;font-size:20px;font-variant-numeric:tabular-nums;line-height:1.3}
+.stat span{font-size:12px;color:var(--ink-3);letter-spacing:.06em}
+.stat small{font-size:12.5px;color:var(--ink-2);overflow-wrap:anywhere}
+
+/* sticky rail */
+.rail{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--bg);border-bottom:1px solid var(--line);margin-bottom:28px}
+.rail-in{display:flex;gap:10px;align-items:center;padding-block:10px}
+.chips{display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;flex:1;min-width:0}
+.chips::-webkit-scrollbar{display:none}
+.chip{flex:none;display:flex;gap:6px;align-items:center;font-size:13px;color:var(--ink-2);text-decoration:none;padding:4px 10px;border:1px solid var(--line);border-radius:999px;background:var(--surface);white-space:nowrap}
+.chip:hover{border-color:var(--accent);color:var(--ink)}
+.chip .mono{font-size:11.5px;color:var(--ink-3)}
+.chip.full{border-color:var(--done);color:var(--done)}
+.btn{font:inherit;font-size:13px;color:var(--accent);background:var(--accent-soft);border:1px solid transparent;border-radius:8px;padding:5px 12px;cursor:pointer;white-space:nowrap;min-height:32px}
+.btn:hover{border-color:var(--accent)}
+.btn:disabled{opacity:.45;cursor:default}
+.btn.ghost{background:transparent;color:var(--ink-2);border-color:var(--line)}
+
+/* section heads */
+.sec{display:grid;gap:14px;margin-bottom:40px}
+.sec>h2{font-family:var(--f-display);font-weight:600;font-size:22px;margin:0;line-height:1.35}
+.sec>p.lede{margin:0;color:var(--ink-2);max-width:44em}
+
+/* trace overview */
+.trace{border:1px solid var(--line);border-radius:12px;background:var(--surface);overflow:hidden;box-shadow:var(--shadow)}
+.tr{display:grid;grid-template-columns:8.5em minmax(0,1fr) 13em 7em 3.2em;gap:14px;align-items:center;padding:11px 16px;color:inherit;text-decoration:none;border-top:1px solid var(--line)}
+.tr:first-child{border-top:0}
+.tr:hover{background:var(--surface-2)}
+.tr-tag{font-size:12.5px;color:var(--accent)}
+.tr-tag::before{content:"→ ";color:var(--ink-3)}
+.tr-name{font-weight:600;min-width:0}
+.tr-name small{font-weight:400;color:var(--ink-3);margin-left:6px}
+.tr-when{font-size:12.5px;color:var(--ink-2)}
+.tr-pct{font-size:12.5px;text-align:right;color:var(--ink-2)}
+.bar{height:6px;border-radius:99px;background:var(--surface-2);overflow:hidden}
+.bar i{display:block;height:100%;width:0;background:var(--done);border-radius:inherit;transition:width .3s}
+.tr.opt .tr-name::after{content:"可选";font-size:11px;font-weight:400;color:var(--amber);border:1px solid currentColor;border-radius:4px;padding:0 5px;margin-left:8px}
+
+/* rules */
+.rules{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.rule{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:16px 18px;display:grid;gap:6px;align-content:start}
+.rule h3{margin:0;font-size:15.5px}
+.rule p{margin:0;color:var(--ink-2);font-size:14px}
+.rhythm{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(0,1fr);gap:12px}
+.box{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:16px 18px;min-width:0}
+.box h3{margin:0 0 8px;font-size:15.5px}
+.box ul{margin:0;padding-left:1.2em;color:var(--ink-2);font-size:14px;display:grid;gap:4px}
+.box li b{color:var(--ink);font-weight:600}
+
+/* phases */
+.phase{margin-top:52px;display:grid;gap:14px;scroll-margin-top:64px}
+.ph{display:grid;gap:8px;padding-bottom:6px}
+.ph-eye{margin:0;font-size:12.5px;color:var(--ink-3)}
+.ph-eye b{color:var(--accent);font-weight:600}
+.ph h2{font-family:var(--f-display);font-weight:900;font-size:clamp(1.5rem,3.6vw,2rem);margin:0;line-height:1.25;text-wrap:balance}
+.ph h2 small{font-family:var(--f-body);font-weight:400;font-size:.55em;color:var(--ink-2);margin-left:10px;letter-spacing:.02em}
+.ph-goal{margin:0;max-width:44em;color:var(--ink-2)}
+.ph-note{margin:0;max-width:44em;font-size:13.5px;color:var(--ink-3)}
+.ph-meta{display:flex;flex-wrap:wrap;gap:6px 18px;font-size:13px;color:var(--ink-2)}
+.ph-meta .out{color:var(--amber);font-weight:600}
+.ph .bar{max-width:420px}
+.weeks{display:grid;gap:10px}
+
+/* week card */
+.week{background:var(--surface);border:1px solid var(--line);border-radius:12px;box-shadow:var(--shadow);scroll-margin-top:64px}
+.week>summary{list-style:none;cursor:pointer;display:grid;grid-template-columns:auto minmax(0,1fr) auto auto;gap:6px 14px;align-items:center;padding:14px 18px}
+.week>summary::-webkit-details-marker{display:none}
+.wk{font-size:13px;font-weight:600;color:var(--ink);background:var(--surface-2);border-radius:6px;padding:2px 8px;white-space:nowrap}
+.wt{display:grid;min-width:0}
+.wt .title{font-weight:650;font-size:16px;line-height:1.45}
+.wt .dates{font-size:12px;color:var(--ink-3)}
+.pjt{font-size:11.5px;font-weight:600;color:var(--amber);background:var(--amber-soft);border-radius:4px;padding:1px 6px;margin-right:8px;vertical-align:2px;white-space:nowrap}
+.cnt{font-size:12.5px;color:var(--ink-3);white-space:nowrap}
+.chev{width:20px;height:20px;color:var(--ink-3);transition:transform .2s}
+.week[open]>summary .chev{transform:rotate(90deg)}
+.nowpill{font-size:11.5px;font-weight:600;color:var(--accent);background:var(--accent-soft);border-radius:999px;padding:1px 8px;margin-left:8px;vertical-align:2px}
+.week.now{border-color:var(--accent);box-shadow:0 0 0 1px var(--accent)}
+.week.full .cnt{color:var(--done);font-weight:600}
+.week.full .wk{background:var(--done-soft);color:var(--done)}
+.week.project{border-color:color-mix(in srgb,var(--amber) 45%,var(--line))}
+.week.project>summary{background:var(--amber-soft);border-radius:11px 11px 0 0}
+.week.project:not([open])>summary{border-radius:11px}
+.wbody{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.25fr);gap:20px 28px;padding:4px 18px 18px;border-top:1px solid var(--line)}
+.week.project .wbody{padding-top:16px}
+.wbody h4{margin:14px 0 6px;font-size:12px;font-weight:600;letter-spacing:.1em;color:var(--ink-3)}
+.wbody h4 em{font-style:normal;font-weight:400;letter-spacing:0;margin-left:6px}
+.lead{margin:14px 0 0;color:var(--ink-2);font-size:14px}
+.note{margin:12px 0 0;font-size:13px;color:var(--amber);background:var(--amber-soft);padding:8px 12px;border-radius:8px}
+.topics{margin:0;padding-left:1.15em;display:grid;gap:3px;font-size:14px;color:var(--ink-2)}
+.topics li::marker{color:var(--ink-3)}
+.ck{display:grid;grid-template-columns:18px minmax(0,1fr);gap:10px;align-items:start;padding:4px 0;font-size:14px}
+.ck input{appearance:none;-webkit-appearance:none;width:18px;height:18px;margin:3px 0 0;border:1.5px solid var(--ink-3);border-radius:5px;background:var(--surface);cursor:pointer;display:grid;place-content:center}
+.ck input::after{content:"";width:9px;height:5px;border:2px solid var(--surface);border-top:0;border-right:0;transform:rotate(-45deg) translate(1px,-1px);opacity:0}
+.ck input:checked{background:var(--done);border-color:var(--done)}
+.ck input:checked::after{opacity:1}
+.ck label{cursor:pointer}
+.ck.on label,.ck.on .res a{color:var(--ink-3)}
+.res{min-width:0;overflow-wrap:anywhere}
+.res .tag{font-size:11px;color:var(--ink-3);border:1px solid var(--line);border-radius:4px;padding:0 5px;margin-left:6px;white-space:nowrap}
+.res .rn{display:block;font-size:12.5px;color:var(--ink-3)}
+.items{display:grid}
+
+.hide-full .week.full{display:none}
+.tools{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.tools label{font-size:13px}
+footer{margin-top:64px;padding-top:20px;border-top:1px solid var(--line);font-size:13px;color:var(--ink-3);display:grid;gap:6px}
+footer p{margin:0;max-width:52em}
+
+@media (max-width:820px){
+  .stats{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .tr{grid-template-columns:minmax(0,1fr) auto;gap:4px 12px}
+  .tr-tag{grid-column:1/-1}
+  .tr-when{grid-column:1/2}
+  .tr-bar{grid-column:1/2}
+  .tr-pct{grid-column:2/3;grid-row:2/4}
+  .rules,.rhythm{grid-template-columns:minmax(0,1fr)}
+  .wbody{grid-template-columns:minmax(0,1fr);gap:0}
+  .sync{margin-left:0;width:100%}
+}
+@media (max-width:480px){
+  .week>summary{grid-template-columns:auto minmax(0,1fr) auto;padding:12px 14px}
+  .week>summary .cnt{grid-column:2/3;grid-row:2}
+  .wbody{padding:4px 14px 14px}
+  .stat b{font-size:17px}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;scroll-behavior:auto!important}}
+</style>
+</head>
+<body>
+<div class="wrap" id="app">
+  <header class="hero">
+    <p class="eyebrow">学习路线 · 根据 <a href="https://x.com/chasen_liao/status/2109081301819310578" target="_blank" rel="noopener">@chasen_liao 的万字长文</a> 整理</p>
+    <h1>Agent 工程师学习计划</h1>
+    <p class="dek">从一次模型请求开始，逐步做到能查资料、能调工具、能保存状态，最后变成别人也能运行和使用的服务。</p>
+    <form class="controls" id="controls" autocomplete="off">
+      <label class="field"><span>开始日期</span><input type="date" id="f-start"></label>
+      <label class="field"><span>学习节奏</span>
+        <select id="f-pace">
+          <option value="0.5">冲刺 · 每周约 30 小时</option>
+          <option value="1">标准 · 每周约 15 小时</option>
+          <option value="2">业余 · 每周约 8 小时</option>
+        </select>
+      </label>
+      <label class="toggle"><input type="checkbox" id="f-p0"> 先补编程基础（加入阶段 0）</label>
+      <div class="sync" id="sync" data-s="local" role="status"><i></i><span id="sync-text">进度保存在这个浏览器里</span></div>
+    </form>
+    <div class="stats">
+      <div class="stat"><span>总时长</span><b id="s-weeks">28 周</b><small id="s-range">2026-10-19 起</small></div>
+      <div class="stat"><span>预计完成</span><b id="s-end">2027-05-02</b><small id="s-units">28 个学习单元</small></div>
+      <div class="stat"><span>已完成</span><b id="s-pct">0%</b><small id="s-done">0 / 0 项</small></div>
+      <div class="stat"><span>现在该学</span><b id="s-now-w">—</b><small id="s-now">—</small></div>
+    </div>
+  </header>
+
+  <nav class="rail" aria-label="阶段导航">
+    <div class="rail-in">
+      <div class="chips" id="chips"></div>
+      <button type="button" class="btn" id="b-now">跳到本周</button>
+    </div>
+  </nav>
+
+  <section class="sec" id="overview">
+    <h2>路线总览</h2>
+    <p class="lede">六个阶段按顺序推进，每个阶段以一个能交付的项目收尾。Prompt Engineering 不单独成段，放在阶段 1 学，之后每个项目都要用。</p>
+    <div class="trace" id="trace"></div>
+  </section>
+
+  <section class="sec" id="rules">
+    <h2>贯穿每个阶段的四条要求</h2>
+    <div class="rules">
+      <div class="rule"><h3>带着问题学</h3><p>每个知识点学完问自己：我能做出什么？怎样验证自己真的会了？每周的“自测”就是这个问题的具体版本。</p></div>
+      <div class="rule"><h3>每个项目至少 3 组 Prompt 对比</h3><p>用同一组输入比较修改前后，记录改善了什么、有没有引入新的失败，再决定是否保留。README 写清 System Prompt 和约束的理由、是否用 Few-shot、怎样控制格式，以及怎样处理不确定、越界和格式错误的回答。</p></div>
+      <div class="rule"><h3>仓库就是证据</h3><p>代码、文档、运行说明和测试都放进 GitHub。每个仓库回答五个问题：输入是什么，输出是什么，成功标准是什么，哪里容易失败，失败后怎样处理。</p></div>
+      <div class="rule"><h3>可以用 AI 学，结果自己验证</h3><p>AI 帮你生成一段实现之后，亲手跑一个正常案例、一个异常案例，再试着讲清它的执行过程。</p></div>
+    </div>
+    <div class="rhythm">
+      <div class="box">
+        <h3>一周怎么安排（标准节奏）</h3>
+        <ul>
+          <li><b>周一到周四</b>，每晚 1.5–2 小时：读一个主题的文档，做对应的小实验</li>
+          <li><b>周五</b>，1 小时：回答本周自测题，写一页学习笔记</li>
+          <li><b>周末</b>，6–8 小时：完成“动手”任务；项目周全部用来写项目</li>
+          <li>跟不上就在顶部切换节奏，所有日期会自动重排</li>
+        </ul>
+      </div>
+      <div class="box">
+        <h3>从哪里开始</h3>
+        <ul>
+          <li><b>已经会后端：</b>直接从阶段 1 开始，模型基础和 API Playground 同时推进</li>
+          <li><b>编程基础不稳：</b>勾选“先补编程基础”，先做阶段 0</li>
+          <li><b>别跳过后端：</b>原文作者面试被指出工程能力不足，之后专门补了 MySQL 和计算机网络</li>
+        </ul>
+      </div>
+    </div>
+    <div class="tools">
+      <button type="button" class="btn ghost" id="b-open">全部展开</button>
+      <button type="button" class="btn ghost" id="b-close">全部折叠</button>
+      <label class="toggle"><input type="checkbox" id="f-hide"> 隐藏已完成的周</label>
+    </div>
+  </section>
+
+  <main id="phases"></main>
+
+  <footer>
+    <p>知识点、学习资料和项目验收要求来自 <a href="https://x.com/chasen_liao/status/2109081301819310578" target="_blank" rel="noopener">Chasen 的原文</a>（原文整理自一份《Agent 工程师入门指南》）。周次安排、动手练习和自测题是按原文内容拆出来的执行版本；标“补充”的资料原文没有给出。</p>
+    <p>链接指向的文档会更新，字段名和事件结构以你实际使用的 API 文档为准。</p>
+  </footer>
+</div>
+
+<script>
+(function(){
+'use strict';
+var L=function(t,u,n,x){return {t:t,u:u,n:n||'',x:!!x};};
+
+var PLAN=[
+{id:'p0',no:'0',tag:'env.setup',name:'编程起步',sub:'可选',optional:true,
+ goal:'能用 Python 写一个调用 HTTP 接口、读写 JSON 的小程序，并用 Git 管理代码。',
+ note:'原文建议编程基础还不稳的人先补 Python、Git、HTTP、JSON 和基本接口开发。这一阶段的资料是补充的官方文档。',
+ weeks:[
+  {id:'p0w1',span:1,title:'Python 与 Git',
+   topics:['语法、函数、模块、异常处理','虚拟环境与包管理（venv、pip 或 uv）','Git：提交、分支、合并、Pull Request'],
+   read:[L('Python 官方教程（中文）','https://docs.python.org/zh-cn/3/tutorial/','',1),L('Pro Git（中文版）','https://git-scm.com/book/zh/v2','',1)],
+   act:['写一个脚本：读取本地 JSON 文件并输出统计结果，推到新建的 GitHub 仓库','走一遍“建分支 → 提交 → 发 PR → 合并”，并手动解决一次冲突'],
+   check:['能说明虚拟环境解决了什么问题','能独立处理一次 merge 冲突']},
+  {id:'p0w2',span:1,title:'HTTP、JSON 与第一个接口',
+   topics:['HTTP 方法、状态码、请求头、请求体','JSON 的结构与序列化','用 httpx 或 requests 调用接口','用 FastAPI 写 GET / POST 接口'],
+   read:[L('MDN：HTTP 概述','https://developer.mozilla.org/zh-CN/docs/Web/HTTP/Overview','',1),L('FastAPI 学习文档','https://fastapi.tiangolo.com/zh/learn/')],
+   act:['用 FastAPI 写一个待办事项接口（新增、查询），分别用 curl 和 Python 调用','故意发送格式错误的 JSON，观察返回的状态码和错误信息'],
+   check:['能说出 400、401、404、422、500 各自的含义','能读懂 FastAPI 自动生成的接口文档']}
+ ]},
+
+{id:'p1',no:'1',tag:'llm.request',name:'LLM 基础',sub:'看懂一次模型调用',
+ goal:'能完整解释一次请求到响应发生了什么，能稳定处理流式输出、结构化输出和工具调用。后面所有内容都建在这一层上。',
+ out:'项目 1 · 大模型 API Playground',
+ weeks:[
+  {id:'p1w1',span:1,title:'模型怎样生成内容',
+   lead:'先建立基本认识，训练细节不必深究，精力放在调用时真正影响系统行为的几件事上。',
+   topics:['Transformer 与注意力机制','预训练、指令微调、RLHF / RLAIF','自回归生成（Next Token Prediction）与上下文学习（In-Context Learning）','Tokenization；输入 Token、输出 Token、Context Window、最大输出长度','上下文溢出：裁剪历史、压缩资料还是调整输入','Lost in the Middle：长上下文中间的信息容易被忽略','采样参数：Temperature、Top-p、Top-k、Frequency / Presence Penalty、Seed、Stop Sequences'],
+   read:[L('图解 Transformer','https://jalammar.github.io/illustrated-transformer/'),L('Token 与计数文档','https://help.openai.com/en/articles/4936856-what-are-tokens-and-how-to-count-them'),L('vLLM SamplingParams 文档','https://docs.vllm.ai/en/v0.6.4/dev/sampling_params.html','原文引用的是 v0.6.4，实际以你所用模型的接口说明为准')],
+   act:['用 tokenizer 给同一段中文和英文计数，记录 Token 数与字数的比例','估算一次请求的 Token 预算：System Prompt + 历史消息 + 工具说明 + 检索资料 + 预留输出','同一个问题用 Temperature 0 / 0.7 / 1.2 各调用 5 次，对比输出差异','把一条关键信息分别放在长上下文的开头、中间、结尾，看回答是否受影响'],
+   check:['能解释为什么 Token 和汉字、单词没有固定对应关系','能说出上下文溢出的两种处理方式及各自的代价','能说明为什么低 Temperature 不保证答案正确，Seed 也不保证结果完全一致']},
+  {id:'p1w2',span:1,title:'模型类型、API 协议与流式输出',
+   topics:['Chat、Reasoning、多模态、Embedding、Rerank、语音与实时模型的分工','Chat Completions、Responses、Messages 三种抽象','message、role（system / user / assistant / tool）、content','关键字段：model、messages / input、instructions、tools、tool_choice、response_format、stream、usage、finish_reason','流式：SSE、event stream、delta、增量文本','工具参数逐步到达、连接中断、用户取消、响应未完成'],
+   read:[L('OpenAI Chat Completions','https://platform.openai.com/docs/api-reference/chat/create'),L('OpenAI Responses','https://platform.openai.com/docs/api-reference/responses'),L('Responses Create 接口','https://platform.openai.com/docs/api-reference/responses/create'),L('Claude Messages','https://platform.claude.com/docs/en/build-with-claude/working-with-messages'),L('Claude Stop Reasons','https://docs.anthropic.com/en/api/handling-stop-reasons'),L('OpenAI 流式响应','https://platform.openai.com/docs/guides/streaming-responses'),L('Claude Streaming','https://docs.anthropic.com/en/docs/build-with-claude/streaming'),L('Responses Streaming 事件参考','https://platform.openai.com/docs/api-reference/responses-streaming')],
+   act:['不用 SDK，直接发 HTTP 请求调用两家供应商的接口，把请求和响应 JSON 存档','做一张字段对照表：同一信息在 Chat Completions / Responses / Messages 里分别叫什么','写一个流式客户端：拼接 delta、识别结束事件，并处理中途断开和主动取消'],
+   check:['看到一次响应，能判断它为什么结束（正常结束、长度截断、工具调用、拒绝）','能说清 usage 里每一项 Token 的含义','能讲清打字机效果背后完整的事件过程']},
+  {id:'p1w3',span:1,title:'结构化输出、工具调用、多轮会话与 Embedding',
+   topics:['JSON Mode 与按 Schema 约束的 Structured Outputs','结构符合要求 ≠ 内容正确：拒绝、截断、校验失败后的修复与重试','Function Calling：模型请求调用和系统真正执行是两件事','tool_call_id 与结果对应、并行工具调用、错误返回','多轮会话：自己维护历史，或用供应商的状态接口；摘要、短期 / 长期记忆、上下文压缩','Embedding：向量维度、归一化、Cosine / Dot Product / L2、批量生成与向量缓存'],
+   read:[L('JSON Schema 基础','https://json-schema.org/understanding-json-schema/basics'),L('Structured Outputs','https://developers.openai.com/api/docs/guides/structured-outputs'),L('Structured Outputs 介绍文章','https://openai.com/index/introducing-structured-outputs-in-the-api/','了解这项能力最初要解决的问题，用法以当前文档为准'),L('OpenAI Function Calling','https://developers.openai.com/api/docs/guides/function-calling'),L('Claude Tool Use','https://platform.claude.com/docs/en/agents-and-tools/tool-use/overview'),L('会话状态文档','https://developers.openai.com/api/docs/guides/conversation-state'),L('Claude 对话中途的系统消息与工具变更','https://platform.claude.com/docs/en/build-with-claude/mid-conversation-system-messages'),L('Embedding 文档','https://platform.openai.com/docs/guides/embeddings')],
+   act:['用 Schema 约束输出一个含枚举和嵌套对象的结构，再人为制造一次校验失败，实现修复或重试','实现一个查询工具，走完整条链路：工具描述与参数 Schema → 模型发起调用 → 系统校验并执行 → 回传结果 → 模型继续','触发一次并行工具调用，确认每个结果都对上了正确的 tool_call_id','生成 20 条文本的向量，算两两相似度，看排序是否符合直觉'],
+   check:['能解释“结构正确”和“内容正确”的区别','能画出工具调用的时序图，标明谁生成、谁执行、谁校验','能说明一次独立的生成请求为什么不会自动带上应用里的聊天记录']},
+  {id:'p1w4',span:1,title:'Prompt Engineering',
+   lead:'这部分不单独做项目，从这一周开始贯穿后面所有项目，效果要放进具体任务里验证。',
+   topics:['六个组成部分：Role / System Prompt、Instruction、Context、Input、Output Format、Constraints','Zero-shot 与 Few-shot：用贴近真实任务的示例表达标准、格式和风格','CoT（拆解与逐步推理）、ReAct（推理 + 调用工具）、Self-Critique / Reflexion（检查与修正）','推理模型上，强行要求“一步一步思考”未必有收益','模型自查之后仍需外部依据：测试结果、引用证据、字段校验、人工复核'],
+   read:[L('OpenAI Prompt Engineering','https://platform.openai.com/docs/guides/prompt-engineering'),L('Claude 提示词指南','https://platform.claude.com/docs/en/build-with-claude/prompt-engineering/overview'),L('Few-shot 学习材料','https://www.promptingguide.ai/zh/techniques/fewshot'),L('CoT 学习材料','https://www.promptingguide.ai/zh/techniques/cot'),L('ReAct 学习材料','https://www.promptingguide.ai/zh/techniques/react'),L('Reflexion 学习材料','https://www.promptingguide.ai/zh/techniques/reflexion'),L('推理模型提示建议','https://developers.openai.com/api/docs/guides/reasoning-best-practices')],
+   act:['写一个对比脚本：同一组 10 条输入跑两个 Prompt 版本，把结果并排输出（后面每个项目都复用它）','找一个模型反复误解的边界，用 2–3 个贴近真实任务的示例修正它','在推理模型上对比加和不加“一步一步思考”的效果'],
+   check:['能说明自己 System Prompt 里每一条约束为什么存在','能举例说明什么时候给示例比继续堆形容词更有效']},
+  {id:'p1w5',span:1,project:'项目 1',title:'大模型 API Playground',
+   lead:'把前四周的能力放进同一个小应用。这一步做扎实，后面用框架时才不会出现“跑起来了，但不知道里面发生了什么”。',
+   req:['支持普通对话、流式响应、结构化输出、工具调用','支持 Embedding 生成和相似度计算','每次调用记录模型、输入、输出、Token 用量和耗时','对比至少两个模型或两家供应商的 API 差异','至少 3 组 Prompt 修改前后对比'],
+   accept:['能讲清一次请求到响应的全过程','能解释 message、role、tool call、tool result、stream、usage 的含义','现场演示一次完整的工具调用','演示结构化输出失败后怎样处理','仓库包含 README、运行说明、示例请求和测试用例']}
+ ]},
+
+{id:'p2',no:'2',tag:'rag.retrieve',name:'RAG',sub:'把资料变成可检索、可引用的证据',
+ goal:'搭出一条完整的检索问答链路：回答能引用来源，资料不足时会拒答，并且有评估数据支撑。',
+ out:'项目 2 · RAG + Tool Calling Agent',
+ weeks:[
+  {id:'p2w1',span:1,title:'文档解析与分块',
+   lead:'表格行列错位、章节标题丢失、代码块被切断，都会让后面检索到的内容没法用。',
+   topics:['PDF、Word、HTML、Markdown、代码、表格、图片 OCR、多模态文档，解析方式各不相同','分块：固定长度、递归分块、语义分块、按 Markdown / 代码结构分块、父子分块','滑动窗口与 overlap'],
+   read:[L('LlamaIndex 文档加载','https://docs.llamaindex.ai/en/stable/module_guides/loading/'),L('Pinecone 分块策略','https://www.pinecone.io/learn/chunking-strategies/'),L('LlamaIndex 节点解析','https://docs.llamaindex.ai/en/stable/module_guides/loading/node_parsers/')],
+   act:['准备一份自己的语料：30 份以上文档，混合 Markdown 和 PDF，至少一份带表格','用三种分块策略切同一份语料，抽查表格、标题、代码块有没有被切坏','记录块大小、块数量，以及 overlap 带来的额外 Token 成本'],
+   check:['能说出块太小、块太大分别会导致什么问题','能为自己的语料选定分块方式并说明理由']},
+  {id:'p2w2',span:1,title:'向量检索与向量库',
+   lead:'先选一种向量库，把写入、更新、检索、删除跑通，再根据数据量、延迟和召回效果学索引取舍。',
+   topics:['把 Embedding 接到检索：Top-K、相似度阈值、向量缓存','向量库：FAISS、Milvus、Qdrant、Weaviate、Chroma、Pinecone、pgvector、Redis Stack','索引方式：FLAT、IVF、HNSW、PQ（先知道区别，原理放到进阶）'],
+   note:'建议选 pgvector：阶段 4 的后端用 PostgreSQL，到时可以直接复用。',
+   read:[L('Embedding 文档','https://platform.openai.com/docs/guides/embeddings'),L('向量数据库学习材料','https://www.pinecone.io/learn/vector-database/'),L('pgvector','https://github.com/pgvector/pgvector')],
+   act:['选一种向量库，跑通写入、更新、检索、删除','写 10 个查询，人工标注期望命中的文档，算出 Top-5 命中率','调整相似度阈值，观察召回数量和噪声怎样变化'],
+   check:['能解释 Cosine、Dot Product、L2 的区别，以及归一化之后它们的关系','能说明自己选的向量库和索引方式适合多大的数据规模']},
+  {id:'p2w3',span:1,title:'混合检索、元数据与重排',
+   topics:['产品型号、报错码、专有名词：BM25 关键词检索 + 向量检索的混合召回','RRF 融合、多查询改写','元数据：标题、章节、来源、时间戳、文档版本、用户权限','权限过滤由系统执行；先过滤后检索与先检索后过滤的取舍','Rerank：Bi-Encoder 与 Cross-Encoder，粗排 + 精排两阶段','实现参考：bge-reranker、Cohere Rerank、Jina Rerank'],
+   read:[L('Hybrid Search','https://www.pinecone.io/learn/hybrid-search/'),L('LlamaIndex Metadata Extraction','https://docs.llamaindex.ai/en/stable/module_guides/indexing/metadata_extraction/'),L('Cohere Reranking','https://docs.cohere.com/docs/reranking')],
+   act:['用产品型号、报错码一类的查询，对比纯向量检索和混合检索的结果','给片段加上来源和权限元数据，验证无权限的内容不会进入上下文','接入一个 Reranker，对比重排前后的 Top-5 命中率'],
+   check:['能解释为什么专有名词需要关键词检索','能说明权限过滤放在检索前和检索后的取舍']},
+  {id:'p2w4',span:1,title:'生成、引用与评估',
+   lead:'RAG 能为回答补充依据，但仍然可能答错，所以检索效果和生成效果要分开检查。',
+   topics:['选哪些片段、怎样排序、要不要压缩','把引用对应回原文位置','避免关键证据被埋在长上下文中间','资料没有覆盖时明确说证据不足；资料过时、冲突、不相关时怎么办','评估指标：检索准确率、召回率、答案忠实度、上下文相关性、幻觉率','进阶方向先了解：Query Rewrite、HyDE、Self-Query、Agentic RAG、GraphRAG'],
+   read:[L('RAG 完整流程','https://www.pinecone.io/learn/retrieval-augmented-generation/'),L('Ragas 文档','https://docs.ragas.io/'),L('GraphRAG 官方项目','https://github.com/microsoft/graphrag','带着“它能解决我哪类检索问题”去读')],
+   act:['让每条回答都带上能对应回原文的引用','构造 5 个资料里没有答案的问题，确认系统会明确说证据不足','用 Ragas 搭一套最小评估流程，分别给检索和生成打分'],
+   check:['看到一个错误回答，能判断是检索出错还是生成出错','能说出 GraphRAG 能解决自己哪类问题，或者为什么暂时用不上']},
+  {id:'p2w5',span:2,project:'项目 2',title:'RAG + Tool Calling Agent',
+   lead:'把检索和工具放进同一个 Agent，让它自己决定是否检索、是否调用工具。',
+   req:['支持上传或导入 Markdown / PDF，完成切分、Embedding 和向量检索','回答引用来源，资料不足时拒答','至少 2 个工具（网页搜索、计算器、文件查询、时间查询等），由 Agent 判断何时使用','记录每一步：reasoning 摘要、工具请求、实际返回、最终结果','不少于 20 条测试问题，覆盖：直接可查、跨文档、需要工具计算、资料里没有、工具失败','至少 3 组 Prompt 修改前后对比'],
+   accept:['能讲清 RAG 的完整链路','能解释模型工具调用和普通函数调用的区别','提供检索结果、回答质量和失败案例分析','仓库包含 README、运行说明和测试集']}
+ ]},
+
+{id:'p3',no:'3',tag:'agent.loop',name:'Agent 应用',sub:'理解循环，再补齐状态、上下文与边界',
+ goal:'能读懂并改造一个 Agent Harness，独立写出一个简化版 Coding Agent，并能解释 Prompt、RAG、工具、工作流、状态、记忆、评估和安全怎样组合。',
+ out:'项目 3 · 简化 Coding Agent',
+ weeks:[
+  {id:'p3w1',span:1,title:'Agent 是什么，什么时候不需要它',
+   topics:['Chatbot 偏对话，Workflow 偏预先确定的流程，Agent 根据任务和反馈动态决定下一步','Agent Loop：模型提出下一步 → 系统执行并返回结果 → 模型继续推进，直到完成或触发停止条件','五种 Workflow 模式：Prompt Chaining、Routing、Parallelization、Orchestrator-Workers、Evaluator-Optimizer'],
+   read:[L('Building Effective Agents','https://www.anthropic.com/engineering/building-effective-agents'),L('Agent 白皮书中文译文','https://arthurchiao.art/blog/ai-agent-white-paper-zh/'),L('Agent Loop 文档','https://code.claude.com/docs/en/agent-sdk/agent-loop')],
+   act:['不用任何框架，各写一个 Prompt Chaining 和 Routing 的最小例子','给项目 2 的 Agent 画出循环图，标出所有停止条件'],
+   check:['给一个需求，能判断用 Workflow 还是 Agent，并说明理由','能说出五种模式各自适合什么任务']},
+  {id:'p3w2',span:1,title:'用 Pi 读懂 Agent Loop 与 Harness',
+   lead:'原文作者补充的入口：Pi 的 Harness 很精简，适合沿着一次任务读源码。',
+   topics:['用户输入怎样进入上下文，模型收到哪些消息和工具说明','工具调用怎样执行，结果怎样回到上下文','循环怎样继续、怎样停止；工具失败或任务中断时发生什么','Harness 的职责：提供运行环境、组织模型看到的信息、执行动作、管理结果和任务状态','Session、上下文管理、工具与 Extension 事件'],
+   read:[L('Pi 官方文档','https://pi.dev/docs/latest'),L('Pi Agent Loop 源码','https://github.com/earendil-works/pi/blob/main/packages/agent/src/agent-loop.ts'),L('Pi Extensions 文档','https://pi.dev/docs/latest/extensions'),L('Pi SDK 文档','https://pi.dev/docs/latest/sdk'),L('@xiaomovps 的相关帖子','https://x.com/xiaomovps','原文推荐一起看')],
+   act:['跑一个“读取文件并回答问题”的任务，记录模型请求、工具调用和结果返回','在 agent-loop.ts 里标出继续、停止、出错三条路径','写一个自己的工具或 Extension，观察它怎样进入原来的循环'],
+   check:['不看代码，能复述 Pi 的一次完整循环','能说清 Session、上下文管理、Extension 事件各自负责什么']},
+  {id:'p3w3',span:1,title:'工具设计、规划与状态管理',
+   topics:['工具描述、参数 Schema、结果组织、错误返回、并行调用、超时与重试','Plan-and-Execute、动态重规划、子任务拆分、任务依赖、终止条件','系统层面的最大步数、总超时、调用预算；做不下去时停下来并交代原因','全局状态与局部状态；消息历史、工具记录、任务进度的更新、持久化与恢复','工具超时不代表操作没完成：写操作要考虑重复执行'],
+   read:[L('Function Calling 文档','https://developers.openai.com/api/docs/guides/function-calling','这次重点看工具描述、参数约束、调用关联和结果返回'),L('Lilian Weng：LLM Powered Autonomous Agents','https://lilianweng.github.io/posts/2023-06-23-agent/'),L('Planning Agents','https://www.langchain.com/blog/planning-agents'),L('LangGraph Persistence','https://docs.langchain.com/oss/python/langgraph/persistence'),L('Durable Execution','https://www.inngest.com/blog/durable-execution-key-to-harnessing-ai-agents'),L('LangGraph Low-level Concepts（旧入口）','https://langchain-ai.github.io/langgraph/concepts/low_level/')],
+   act:['给项目 2 的工具补上超时、重试和结构化的错误返回','给 Agent 加最大步数和调用预算，触发一次，确认它能说明停止原因','实现检查点：杀掉进程后能从上次的步骤继续'],
+   check:['能说明一个写操作超时后为什么不能直接重试','能说出什么情况下应该触发重规划']},
+  {id:'p3w4',span:1,title:'记忆、上下文工程与 MCP',
+   topics:['短期、长期、情景、语义记忆；记忆的提取、压缩与遗忘','系统存下来的信息 ≠ 模型这一轮实际看到的信息','上下文工程：信息选择、裁剪、压缩、动态注入、工具结果摘要、历史消息摘要','压缩后检查：目标、关键约束、已完成的操作、未解决的问题是否还在','MCP：Server、Client；Tools、Resources、Prompts','接通工具之后，权限、参数校验和结果可信度仍由应用负责'],
+   read:[L('Agent Memory 学习材料','https://www.ibm.com/think/topics/ai-agent-memory'),L('Lilian Weng：Memory 部分','https://lilianweng.github.io/posts/2023-06-23-agent/#component-two-memory'),L('Anthropic：上下文工程','https://www.anthropic.com/engineering/effective-context-engineering-for-ai-agents'),L('MCP 官方入门文档','https://modelcontextprotocol.io/docs/getting-started/intro')],
+   act:['给 Agent 加历史摘要，压缩前后各跑一遍长任务，检查关键约束有没有丢','写一个最小的 MCP Server，暴露一个工具和一个资源，接入任意 MCP Client'],
+   check:['能说明自己的项目该存哪些记忆、什么时候取出来','能解释 MCP 的 Tools、Resources、Prompts 分别给谁用']},
+  {id:'p3w5',span:1,title:'Human-in-the-Loop、安全与评估',
+   topics:['审批、中断、恢复、人工修正；明确系统能自动执行到哪一步','发送消息、删除文件、变更业务数据前要有确认节点','Prompt Injection、工具越权、权限控制、沙箱执行、敏感数据保护','外部内容一律不可信：出现在上下文里不代表它是可执行指令','评估整个任务：完成率、工具调用准确率、步骤合理性、失败恢复、成本、延迟、多轮稳定性'],
+   read:[L('LangGraph Interrupts','https://docs.langchain.com/oss/python/langgraph/interrupts'),L('Human-in-the-Loop（旧入口）','https://langchain-ai.github.io/langgraph/concepts/human_in_the_loop/'),L('OWASP Prompt Injection 防护指南','https://cheatsheetseries.owasp.org/cheatsheets/LLM_Prompt_Injection_Prevention_Cheat_Sheet.html'),L('Langfuse Evaluation','https://langfuse.com/docs/evaluation/overview'),L('LangSmith Evaluation','https://docs.langchain.com/langsmith/evaluation')],
+   act:['给删除文件、发送消息这类操作加人工确认节点，确认后能接着执行','构造一个网页里藏着“忽略用户要求”的注入样例，验证 Agent 不会照做','用 Langfuse 或 LangSmith 建一个 10 条任务的评估集，比较两个版本'],
+   check:['能列出自己 Agent 的权限边界和需要人工确认的操作','能说明为什么 Agent 评估要看整个任务，而不只是最后的回答']},
+  {id:'p3w6',span:2,project:'项目 3',title:'简化 Coding Agent',
+   lead:'原文把这道练习叫作“从 0 到 1 写一个 Claude Code”，参考的是教学项目 learn-claude-code，范围以它为准。',
+   read:[L('learn-claude-code','https://github.com/shareAI-lab/learn-claude-code')],
+   req:['完整阅读 learn-claude-code，理清模块职责和调用关系','追踪一个真实任务：输入进入循环 → 工具执行 → 结果返回 → 继续或停止','从零实现自己的版本','亲手改一个机制（工具错误处理、权限检查或上下文压缩），用测试观察行为变化','至少 3 组 Prompt 修改前后对比'],
+   accept:['能解释循环、工具、权限、上下文管理几个模块怎样协作','改动有对应测试，能演示改动前后的行为差异','仓库包含 README、运行说明和测试']}
+ ]},
+
+{id:'p4',no:'4',tag:'api.serve',name:'后端工程',sub:'让 Agent 成为能运行和维护的服务',
+ goal:'应对真实使用中的问题：多人请求、长任务、会话保存、失败恢复、测试和部署。最终一条命令启动，一条命令测试。',
+ out:'项目 4 · AI 服务后端系统',
+ weeks:[
+  {id:'p4w1',span:1,title:'Python Async、FastAPI 与 Pydantic',
+   topics:['asyncio、协程、事件循环、任务调度、并发控制、异步 I/O、超时与取消','哪些操作会阻塞；加上 async 不等于性能自动变好','FastAPI：路由、请求响应模型、Depends 依赖注入、中间件、异常处理、生命周期、OpenAPI','Pydantic：BaseModel、Field、嵌套模型、枚举、校验器、配置、DTO 设计、序列化'],
+   read:[L('Python asyncio 文档','https://docs.python.org/3/library/asyncio.html'),L('FastAPI 学习文档','https://fastapi.tiangolo.com/zh/learn/'),L('Pydantic 文档','https://docs.pydantic.dev/latest/')],
+   act:['用 asyncio 并发调用模型 API，加上并发上限、超时和取消','在 async 接口里故意放一个阻塞调用，测出它对吞吐的影响','把项目 2 的问答能力包成 FastAPI 接口，入参出参都用 Pydantic 定义'],
+   check:['能判断什么时候该用 async，什么时候不该用','能说明 Depends 解决了什么问题']},
+  {id:'p4w2',span:1,title:'SQLAlchemy、Alembic 与 PostgreSQL',
+   topics:['SQLAlchemy 2.0：模型、关系、查询、事务、连接池、AsyncSession','Alembic 管理数据库迁移','PostgreSQL：表设计、索引、事务、锁','JSONB、全文检索、pgvector'],
+   read:[L('SQLAlchemy Async 文档','https://docs.sqlalchemy.org/en/20/orm/extensions/asyncio.html'),L('Alembic 文档','https://alembic.sqlalchemy.org/en/latest/'),L('PostgreSQL 文档','https://www.postgresql.org/docs/'),L('pgvector','https://github.com/pgvector/pgvector')],
+   act:['设计用户、会话、消息、任务四张表，画出它们的关系','用 Alembic 完成一次加字段的迁移，再回滚','如果项目 2 还没用 pgvector，把向量存储迁过来'],
+   check:['能解释任务状态在什么时机更新、失败记录怎样保留','能说出自己建的每个索引服务于哪个查询']},
+  {id:'p4w3',span:1,title:'Redis 与消息队列',
+   topics:['Redis：String、Hash、Set、ZSet、Stream、TTL、Pipeline、Lua、Pub/Sub；RedisJSON、Vector Search','场景：缓存、限流、分布式锁、会话状态、任务状态、轻量消息流','RabbitMQ：Producer、Consumer、Exchange、Queue、Binding、Routing Key、Ack、Prefetch、死信队列、Quorum Queue','文档导入、批量 Embedding、长时间 Agent 任务：后台执行、进度查询、失败处理、避免重复消费'],
+   read:[L('Redis 文档','https://redis.io/docs/latest/'),L('Redis Search and Query','https://redis.io/docs/latest/develop/interact/search-and-query/'),L('RabbitMQ Tutorials','https://www.rabbitmq.com/tutorials'),L('RabbitMQ 文档','https://www.rabbitmq.com/docs')],
+   act:['用 Redis 给模型接口做按用户限流','把文档导入改成 RabbitMQ 异步任务，并提供进度查询接口','模拟消费者崩溃，确认消息重新投递后不会重复写入'],
+   check:['能说明缓存、限流、分布式锁各自需要 Redis 提供什么保证','能解释 Ack 和死信队列怎样配合处理失败任务']},
+  {id:'p4w4',span:1,title:'测试、容器化与 CI/CD',
+   topics:['单元测试、集成测试、异步测试、Mock、Fixture、测试数据库、接口测试','模型 API、数据库、消息队列出错时的测试','Docker：Dockerfile、镜像构建、环境变量、volume、network、multi-stage build','Docker Compose 管理本地依赖','GitHub Actions：workflow、job、step、trigger、secrets、cache、artifact'],
+   read:[L('pytest','https://docs.pytest.org/en/stable/'),L('pytest-asyncio','https://pytest-asyncio.readthedocs.io/en/latest/'),L('Docker 入门文档','https://docs.docker.com/get-started/'),L('Docker Compose 文档','https://docs.docker.com/compose/'),L('GitHub Actions 文档','https://docs.github.com/en/actions')],
+   act:['为模型 API 超时、数据库断连各写一个测试','用 Docker Compose 一次拉起应用、PostgreSQL、Redis、RabbitMQ','配一条 GitHub Actions：提 PR 时自动跑 lint 和 test'],
+   check:['能说明 Mock 外部模型 API 时要覆盖哪些异常','能解释 multi-stage build 为什么能减小镜像']},
+  {id:'p4w5',span:2,project:'项目 4',title:'AI 服务后端系统',
+   lead:'让后端承载项目 2、3 已经做好的 RAG 和 Agent 能力，不为交作业重复搭壳子。',
+   req:['FastAPI 提供 REST API，Pydantic 定义请求和响应','PostgreSQL 保存用户、会话、消息和任务','Redis 承担缓存或任务状态','RabbitMQ 或后台任务队列处理异步任务','用 Docker Compose 启动本地环境','单元测试 + 接口测试；CI 至少包含 lint 和 test'],
+   accept:['一条命令启动，能访问 API 文档','一条命令运行全部测试','能解释数据库设计、异步任务和错误处理','README 包含架构说明、启动方式、接口示例和测试说明']}
+ ]},
+
+{id:'p5',no:'5',tag:'oss.read',name:'开源项目实战',sub:'每个方向挑一个：跑通、讲清、改动、验证',
+ goal:'不用把这些项目全学一遍。每个方向挑一个，跑通一个有明确验收条件的任务，讲清执行过程，再做一个能验证的小改动。',
+ out:'4 份源码学习仓库（笔记 + 改动 + 测试）',
+ weeks:[
+  {id:'p5w1',span:1,title:'Coding Agent：Pi 与 Codex CLI',
+   topics:['以 Pi 为主：一次模型调用怎样进入工具执行，结果怎样回到下一轮','Codex CLI 作对照：同样是读代码、改代码、跑命令，工具执行、权限和任务状态怎样组织'],
+   read:[L('Pi','https://github.com/earendil-works/pi'),L('Codex CLI','https://github.com/openai/codex')],
+   act:['沿一个真实任务分别追踪两者的执行过程，写一份对比笔记','给 Pi 加一个工具或 Extension，验证它确实改变了 Agent 的行为'],
+   check:['能说明两者在权限和任务状态管理上的主要差异']},
+  {id:'p5w2',span:1,title:'Working Agent：WorkBuddy、OpenWork、Eigent',
+   topics:['WorkBuddy 看体验：Agent 怎样接任务、执行、等待确认、交付结果','OpenWork 读源码：任务界面、工作目录与上下文、执行状态、工具连接、最终产物','Eigent（选读）：多 Agent 协作中任务怎样拆、角色怎样分工、结果怎样汇总'],
+   note:'OpenWork 的桌面和核心部分是 MIT 许可，ee/ 目录用的是另一份受限许可证，不要把整个仓库都当成 MIT。',
+   read:[L('WorkBuddy','https://www.workbuddy.cn/docs/workbuddy/'),L('OpenWork','https://github.com/different-ai/openwork'),L('OpenWork ee/ 许可证','https://github.com/different-ai/openwork/blob/dev/ee/LICENSE'),L('Eigent','https://github.com/eigent-ai/eigent')],
+   act:['用 WorkBuddy 完成一个真实小任务，记录它在哪些节点等待确认','在 OpenWork 源码里追踪一次任务从界面到产物的路径'],
+   check:['能画出 OpenWork 里一次任务的状态流转']},
+  {id:'p5w3',span:1,title:'常驻助手：先 nanobot，再 OpenClaw',
+   topics:['nanobot（Python）：围绕一个容易追踪的 Agent Loop，串起消息入口、工具调用、会话、记忆和定时任务','OpenClaw：常驻 Gateway、多渠道接入、Skills，以及权限和沙箱配置'],
+   note:'先用测试账号和非敏感文件运行，不要一启动就把主账号、个人文件和执行权限全交出去。',
+   read:[L('nanobot','https://github.com/HKUDS/nanobot'),L('OpenClaw','https://github.com/openclaw/openclaw')],
+   act:['跑通 nanobot，加一个定时任务，追踪它的触发路径','对照 OpenClaw，列出 Gateway 和 Skills 比 nanobot 多解决了什么'],
+   check:['能说明常驻助手和一次性 Agent 在状态管理上的区别']},
+  {id:'p5w4',span:1,title:'Personal Agent：OpenBot 与 OpenDots',
+   topics:['OpenBot：每个 Agent 的执行环境怎样隔离，浏览器、文件和工具操作怎样经过统一网关，权限策略和操作记录怎样落下来','OpenDots：持久会话、后台任务，文字、语音、Slack 等入口怎样衔接，需要确认的操作怎样暂停并在批准后继续'],
+   note:'两个项目的源码都是 MIT，但运行依赖 CopilotKit Intelligence 等服务。开源不代表整套系统免费，也不代表没有外部服务或额外授权要求。',
+   read:[L('OpenBot','https://github.com/CopilotKit/OpenBot'),L('OpenDots','https://github.com/CopilotKit/OpenDots')],
+   act:['跑通其中一个，追踪一次需要人工确认的操作怎样暂停、怎样恢复','做一个可验证的小改动，并补上测试'],
+   check:['能说明它的权限策略和操作记录分别落在哪里']}
+ ]},
+
+{id:'p6',no:'6',tag:'on_demand',name:'进阶',sub:'按需',ondemand:true,
+ goal:'等基础项目里出现了具体需求再深入，不必提前学。',
+ items:['向量索引算法：FLAT、IVF、HNSW、PQ 的原理与取舍','Advanced RAG：Query Rewrite、HyDE、Self-Query、Agentic RAG、GraphRAG','更复杂的记忆系统','Kubernetes：Pod、Deployment、Service、Ingress、ConfigMap、Secret、Job、CronJob、HPA、健康检查、滚动发布','微服务：单体与服务拆分、DDD 边界、同步 / 异步通信、API 网关、配置管理、服务治理、可观测性','求职补充：MySQL、计算机网络的常见面试题（原文作者面试后的经验）'],
+ read:[L('GraphRAG','https://github.com/microsoft/graphrag'),L('Kubernetes Concepts','https://kubernetes.io/docs/concepts/'),L('Microservices.io','https://microservices.io/')],
+ weeks:[]}
+];
+
+var DEFAULT_START='2026-10-19';
+var LS_KEY='agent-plan-progress-v1', LS_UI='agent-plan-ui-v1';
+var state={done:{},start:DEFAULT_START,pace:1,p0:false,updatedAt:0};
+var ui={closed:{},hideFull:false};
+
+function lsGet(k){try{var v=localStorage.getItem(k);return v?JSON.parse(v):null;}catch(e){return null;}}
+function lsSet(k,v){try{localStorage.setItem(k,JSON.stringify(v));}catch(e){}}
+function normalize(d){
+  var s={done:{},start:DEFAULT_START,pace:1,p0:false,updatedAt:0};
+  if(!d||typeof d!=='object') return s;
+  if(d.done&&typeof d.done==='object'){for(var k in d.done){if(d.done[k]===true) s.done[k]=true;}}
+  if(typeof d.start==='string'&&/^\d{4}-\d{2}-\d{2}$/.test(d.start)) s.start=d.start;
+  if([0.5,1,2].indexOf(Number(d.pace))>=0) s.pace=Number(d.pace);
+  s.p0=!!d.p0;
+  if(typeof d.updatedAt==='number') s.updatedAt=d.updatedAt;
+  return s;
+}
+state=normalize(lsGet(LS_KEY));
+var u0=lsGet(LS_UI); if(u0){ui.closed=u0.closed||{};ui.hideFull=!!u0.hideFull;}
+
+/* ---------- DOM helpers ---------- */
+function el(tag,attrs){
+  var e=document.createElement(tag);
+  if(attrs){for(var k in attrs){var v=attrs[k];if(v==null||v===false)continue;
+    if(k==='class')e.className=v;else if(k==='text')e.textContent=v;else if(k.slice(0,2)==='on')e.addEventListener(k.slice(2),v);else e.setAttribute(k,v===true?'':v);}}
+  for(var i=2;i<arguments.length;i++){var c=arguments[i];if(c==null||c===false)continue;
+    if(Array.isArray(c)){c.forEach(function(x){if(x!=null&&x!==false)e.append(x.nodeType?x:document.createTextNode(x));});}
+    else e.append(c.nodeType?c:document.createTextNode(c));}
+  return e;
+}
+function $(id){return document.getElementById(id);}
+var CHEV='<svg class="chev" viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M7.5 5l5 5-5 5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+
+var ALL=[]; /* {id, input, row} */
+function ckRow(id,bucket,content,isLink,label){
+  var cid='c_'+id.replace(/[^a-zA-Z0-9]/g,'_');
+  var input=el('input',{type:'checkbox',id:cid,'data-id':id});
+  if(isLink) input.setAttribute('aria-label','已读：'+label);
+  var row=el('div',{class:'ck'},input,isLink?content:el('label',{for:cid},content));
+  ALL.push({id:id,input:input,row:row}); bucket.push(id);
+  return row;
+}
+function resNode(r){
+  return el('span',{class:'res'},
+    el('a',{href:r.u,target:'_blank',rel:'noopener'},r.t),
+    r.x?el('span',{class:'tag'},'补充'):null,
+    r.n?el('span',{class:'rn'},r.n):null);
+}
+function group(title,hint,rows){
+  return [el('h4',null,title,hint?el('em',null,hint):null),el('div',{class:'items'},rows)];
+}
+
+/* ---------- build ---------- */
+var WEEKS=[]; var PH={};
+function build(){
+  var main=$('phases'), trace=$('trace'), chips=$('chips');
+  PLAN.forEach(function(p){
+    var ph={p:p,items:[],weekRefs:[]}; PH[p.id]=ph;
+    var dates=el('span',{class:'dates mono'});
+    var wcount=el('span',{class:'mono'});
+    var bar=el('div',{class:'bar'},el('i'));
+    var meta=el('div',{class:'ph-meta'},p.ondemand?el('span',null,'不排进日程'):[wcount,dates],p.out?el('span',{class:'out'},'产出：'+p.out):null);
+    var head=el('header',{class:'ph'},
+      el('p',{class:'ph-eye mono'},'阶段 '+p.no+' · ',el('b',null,p.tag)),
+      el('h2',null,p.name,el('small',null,p.sub)),
+      el('p',{class:'ph-goal'},p.goal),
+      p.note?el('p',{class:'ph-note'},p.note):null,
+      meta,bar);
+    var weeksBox=el('div',{class:'weeks'});
+    var sec=el('section',{class:'phase',id:p.id},head,weeksBox);
+    ph.sec=sec; ph.dates=dates; ph.wcount=wcount; ph.bar=bar.firstChild;
+
+    p.weeks.forEach(function(w){
+      var bucket=[];
+      var label=el('span',{class:'wk mono'});
+      var wdates=el('span',{class:'dates mono'});
+      var now=el('span',{class:'nowpill',hidden:true},'本周');
+      var title=el('span',{class:'title'},w.project?el('span',{class:'pjt'},w.project):null,w.title,now);
+      var cnt=el('span',{class:'cnt mono'});
+      var sum=el('summary',null,label,el('span',{class:'wt'},title,wdates),cnt);
+      sum.insertAdjacentHTML('beforeend',CHEV);
+      var left=el('div',{class:'col-l'}), right=el('div',{class:'col-r'});
+      if(w.lead) left.append(el('p',{class:'lead'},w.lead));
+      if(w.topics){left.append.apply(left,group('学什么',null,[el('ul',{class:'topics'},w.topics.map(function(t){return el('li',null,t);}))]));}
+      if(w.note) left.append(el('p',{class:'note'},w.note));
+      if(w.read&&w.read.length){
+        var target=w.project?left:right;
+        target.append.apply(target,group('读什么','读完勾选',w.read.map(function(r,i){return ckRow(w.id+'.r'+i,bucket,resNode(r),true,r.t);})));
+      }
+      if(w.act) right.append.apply(right,group('动手',null,w.act.map(function(t,i){return ckRow(w.id+'.d'+i,bucket,t);})));
+      if(w.check) right.append.apply(right,group('自测','能做到再勾',w.check.map(function(t,i){return ckRow(w.id+'.c'+i,bucket,t);})));
+      if(w.req) right.append.apply(right,group('要做',null,w.req.map(function(t,i){return ckRow(w.id+'.q'+i,bucket,t);})));
+      if(w.accept) right.append.apply(right,group('验收',null,w.accept.map(function(t,i){return ckRow(w.id+'.a'+i,bucket,t);})));
+      var det=el('details',{class:'week'+(w.project?' project':''),id:'w-'+w.id},sum,el('div',{class:'wbody'},left,right));
+      if(!ui.closed[w.id]) det.open=true;
+      det.addEventListener('toggle',function(){ if(det.open) delete ui.closed[w.id]; else ui.closed[w.id]=1; lsSet(LS_UI,ui); });
+      weeksBox.append(det);
+      var ref={w:w,p:p,det:det,label:label,dates:wdates,cnt:cnt,now:now,items:bucket};
+      WEEKS.push(ref); ph.weekRefs.push(ref); bucket.forEach(function(id){ph.items.push(id);});
+    });
+
+    if(p.ondemand){
+      var bucket6=[]; var left6=el('div',{class:'col-l'}), right6=el('div',{class:'col-r'});
+      right6.append.apply(right6,group('清单',null,p.items.map(function(t,i){return ckRow(p.id+'.i'+i,bucket6,t);})));
+      left6.append.apply(left6,group('读什么',null,p.read.map(function(r,i){return ckRow(p.id+'.r'+i,bucket6,resNode(r),true,r.t);})));
+      weeksBox.append(el('div',{class:'week'},el('div',{class:'wbody',style:'border-top:0'},left6,right6)));
+      bucket6.forEach(function(id){ph.items.push(id);});
+    }
+    main.append(sec);
+
+    /* overview row */
+    var tw=el('span',{class:'tr-when mono'}); var tb=el('span',{class:'tr-bar bar'},el('i')); var tp=el('span',{class:'tr-pct mono'});
+    var row=el('a',{class:'tr'+(p.optional?' opt':''),href:'#'+p.id},el('span',{class:'tr-tag mono'},p.tag),el('span',{class:'tr-name'},p.name,el('small',null,p.sub)),tw,tb,tp);
+    trace.append(row); ph.trow=row; ph.twhen=tw; ph.tbar=tb.firstChild; ph.tpct=tp;
+    /* chip */
+    var cp=el('span',{class:'mono'});
+    var chip=el('a',{class:'chip',href:'#'+p.id},el('span',{class:'mono'},p.no),p.name,cp);
+    chips.append(chip); ph.chip=chip; ph.cpct=cp;
+  });
+}
+
+/* ---------- dates ---------- */
+function parseDate(s){var m=s.split('-');return new Date(+m[0],+m[1]-1,+m[2]);}
+function addDays(d,n){var x=new Date(d.getFullYear(),d.getMonth(),d.getDate());x.setDate(x.getDate()+n);return x;}
+function pad(n){return (n<10?'0':'')+n;}
+function iso(d){return d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate());}
+function md(d){return (d.getMonth()+1)+'/'+d.getDate();}
+function unitStart(n){return addDays(parseDate(state.start),Math.round(n*7*state.pace));}
+function unitEnd(n){return addDays(parseDate(state.start),Math.round(n*7*state.pace)-1);}
+function wlabel(a,span){return span>1?'W'+pad(a+1)+'–'+pad(a+span):'W'+pad(a+1);}
+
+var TOTAL=0, CURRENT=null;
+function layout(){
+  var n=0;
+  PLAN.forEach(function(p){
+    var ph=PH[p.id]; ph.hidden=!!(p.optional&&!state.p0);
+    if(ph.hidden||p.ondemand) return;
+    ph.n0=n; ph.weekRefs.forEach(function(r){r.n=n;n+=r.w.span;}); ph.n1=n;
+  });
+  TOTAL=n;
+}
+
+/* ---------- apply state to DOM ---------- */
+function countDone(ids){var c=0;for(var i=0;i<ids.length;i++){if(state.done[ids[i]])c++;}return c;}
+function pct(a,b){return b?Math.round(a*100/b):0;}
+function applyState(){
+  layout();
+  var today=new Date(); today=new Date(today.getFullYear(),today.getMonth(),today.getDate());
+  CURRENT=null;
+  ALL.forEach(function(it){var on=!!state.done[it.id];it.input.checked=on;it.row.classList.toggle('on',on);});
+  var allDone=0, allTot=0;
+  PLAN.forEach(function(p){
+    var ph=PH[p.id];
+    ph.sec.hidden=ph.hidden; ph.trow.hidden=ph.hidden; ph.chip.hidden=ph.hidden;
+    var d=countDone(ph.items), t=ph.items.length, pc=pct(d,t);
+    ph.bar.style.width=pc+'%'; ph.tbar.style.width=pc+'%'; ph.tpct.textContent=pc+'%'; ph.cpct.textContent=pc+'%';
+    ph.chip.classList.toggle('full',t>0&&d===t);
+    if(p.ondemand){ ph.twhen.textContent='按需'; return; }
+    if(ph.hidden) return;
+    allDone+=d; allTot+=t;
+    var s=unitStart(ph.n0), e=unitEnd(ph.n1), weeks=Math.round((ph.n1-ph.n0)*state.pace*10)/10;
+    ph.dates.textContent=md(s)+' – '+md(e);
+    ph.wcount.textContent=weeks+' 周';
+    ph.twhen.textContent=wlabel(ph.n0,ph.n1-ph.n0)+' · '+md(s)+'–'+md(e);
+    ph.weekRefs.forEach(function(r){
+      var ws=unitStart(r.n), we=unitEnd(r.n+r.w.span);
+      r.label.textContent=wlabel(r.n,r.w.span);
+      r.dates.textContent=md(ws)+' – '+md(we)+(r.w.span>1?' · 两个单元':'');
+      var wd=countDone(r.items); r.cnt.textContent=wd+'/'+r.items.length;
+      r.det.classList.toggle('full',wd===r.items.length);
+      var isNow=today>=ws&&today<=we; r.det.classList.toggle('now',isNow); r.now.hidden=!isNow;
+      if(isNow) CURRENT=r;
+    });
+  });
+  /* stats */
+  var start=parseDate(state.start), end=unitEnd(TOTAL);
+  var calWeeks=Math.round(TOTAL*state.pace*10)/10;
+  $('s-weeks').textContent=calWeeks+' 周';
+  $('s-range').textContent=iso(start)+' 起';
+  $('s-end').textContent=iso(end);
+  $('s-units').textContent=TOTAL+' 个学习单元';
+  var p=pct(allDone,allTot);
+  $('s-pct').textContent=p+'%';
+  $('s-done').textContent=allDone+' / '+allTot+' 项（不含进阶）';
+  var nb=$('b-now');
+  if(CURRENT){ $('s-now-w').textContent=wlabel(CURRENT.n,CURRENT.w.span); $('s-now').textContent=CURRENT.w.title; nb.disabled=false; nb.textContent='跳到本周'; }
+  else if(today<start){ var days=Math.round((start-today)/86400000); var first=firstVisibleWeek(); $('s-now-w').textContent=days+' 天后'; $('s-now').textContent='从 '+(first?first.w.title:'')+' 开始'; nb.disabled=false; nb.textContent='跳到第一周'; }
+  else { $('s-now-w').textContent='已结束'; $('s-now').textContent='计划周期已过，可以调整开始日期'; nb.disabled=true; nb.textContent='跳到本周'; }
+  /* controls */
+  $('f-start').value=state.start; $('f-pace').value=String(state.pace); $('f-p0').checked=state.p0; $('f-hide').checked=ui.hideFull;
+  $('phases').classList.toggle('hide-full',ui.hideFull);
+}
+function firstVisibleWeek(){for(var i=0;i<WEEKS.length;i++){if(!PH[WEEKS[i].p.id].hidden)return WEEKS[i];}return null;}
+
+/* ---------- persistence ---------- */
+var sync={ref:null,writing:false,again:false,dirty:false,timer:null,retried:false};
+function setStatus(s,msg){
+  var box=$('sync'); box.setAttribute('data-s',s);
+  $('sync-text').textContent=msg||({local:'进度保存在这个浏览器里',connecting:'正在连接你的账号…',synced:'进度已保存到你的账号，换设备也能继续',error:'保存失败'})[s];
+}
+function payload(){return {v:1,done:state.done,start:state.start,pace:state.pace,p0:state.p0,updatedAt:state.updatedAt};}
+function changed(){
+  state.updatedAt=Date.now(); lsSet(LS_KEY,state);
+  if(!sync.ref) return;
+  sync.dirty=true; clearTimeout(sync.timer); sync.timer=setTimeout(flush,700);
+}
+function flush(){
+  if(!sync.ref) return;
+  if(sync.writing){sync.again=true;return;}
+  sync.writing=true; sync.dirty=false;
+  sync.ref.set(payload()).then(function(){ sync.retried=false; setStatus('synced'); },function(e){
+    var code=e&&e.code;
+    if(code==='unavailable'&&!sync.retried){ sync.retried=true; setTimeout(flush,800+Math.random()*1200); }
+    else if(code==='quota_exceeded'){ setStatus('error','账号存储已满，进度暂时只保存在这个浏览器里'); }
+    else { sync.ref=null; setStatus('local'); }
+  }).then(function(){ sync.writing=false; if(sync.again){sync.again=false;flush();} });
+}
+function adopt(d){
+  var r=normalize(d);
+  if(r.updatedAt>state.updatedAt){ state=r; lsSet(LS_KEY,state); applyState(); }
+  else if(r.updatedAt<state.updatedAt){ changed(); }
+}
+function hasProgress(s){return Object.keys(s.done).length>0||s.start!==DEFAULT_START||s.pace!==1||s.p0;}
+function initSync(){
+  if(!(window.claude&&typeof window.claude.use==='function')){ setStatus('local'); return; }
+  setStatus('connecting');
+  Promise.all([window.claude.use('db'),window.claude.use('user')]).then(function(res){
+    var db=res[0], user=res[1];
+    if(!db||!user){ setStatus('local'); return; }
+    return user.id().then(function(uid){
+      if(!uid){ setStatus('local'); return; }
+      var ref=db.doc('data/users/'+uid+'/progress');
+      return ref.get().then(function(snap){
+        if(snap.exists){ adopt(snap.data()); return; }
+        if(hasProgress(state)) return ref.set(payload());
+      }).then(function(){
+        sync.ref=ref; setStatus('synced');
+        ref.onSnapshot(function(snap){
+          if(!snap.exists||sync.dirty||sync.writing) return;
+          if(snap.metadata&&snap.metadata.hasPendingWrites) return;
+          adopt(snap.data());
+        },function(){ sync.ref=null; setStatus('local'); });
+      });
+    });
+  }).catch(function(){ sync.ref=null; setStatus('local'); });
+}
+
+/* ---------- events ---------- */
+function wire(){
+  $('phases').addEventListener('change',function(e){
+    var t=e.target; if(!t||t.type!=='checkbox'||!t.getAttribute('data-id')) return;
+    var id=t.getAttribute('data-id'); if(t.checked) state.done[id]=true; else delete state.done[id];
+    applyState(); changed();
+  });
+  $('controls').addEventListener('submit',function(e){e.preventDefault();});
+  $('f-start').addEventListener('change',function(e){ if(/^\d{4}-\d{2}-\d{2}$/.test(e.target.value)){ state.start=e.target.value; applyState(); changed(); } });
+  $('f-pace').addEventListener('change',function(e){ state.pace=Number(e.target.value)||1; applyState(); changed(); });
+  $('f-p0').addEventListener('change',function(e){ state.p0=e.target.checked; applyState(); changed(); });
+  $('f-hide').addEventListener('change',function(e){ ui.hideFull=e.target.checked; lsSet(LS_UI,ui); applyState(); });
+  $('b-open').addEventListener('click',function(){ WEEKS.forEach(function(r){r.det.open=true;}); });
+  $('b-close').addEventListener('click',function(){ WEEKS.forEach(function(r){r.det.open=false;}); });
+  $('b-now').addEventListener('click',function(){
+    var r=CURRENT||firstVisibleWeek(); if(!r) return;
+    r.det.open=true; r.det.scrollIntoView({behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth',block:'start'});
+  });
+}
+
+build(); wire(); applyState(); initSync();
+})();
+</script>
+</body>
+</html>
