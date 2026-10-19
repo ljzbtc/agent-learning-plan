@@ -6,15 +6,17 @@
 
 ## 怎么用
 
-- **交互版**：在线打开 **https://ljzbtc.github.io/agent-learning-plan/** ，也可以下载 [`index.html`](index.html) 用浏览器打开。可以设置开始日期和学习节奏，日期会自动重排；勾选的进度保存在当前浏览器里。
+- **交互版**：用浏览器打开 [`index.html`](index.html)。可以设置开始日期和学习节奏，日期会自动重排；勾选的进度保存在当前浏览器里。
 - **在 GitHub 上打勾**：编辑这份 README，把 `- [ ]` 改成 `- [x]`。
 - 下面的日期按 **2026-10-19 开始、标准节奏（每周约 15 小时）** 计算，共 28 周，预计 2027-05-02 完成。编程基础不稳的话，先做阶段 0（再加 2 周）。
+- 前 8 周另有一条 [并行的数学基础轨道](#并行轨道)（微积分，为概率论打基础），每天 30–45 分钟，和主线同一天开始。
 
 ## 路线总览
 
 | 阶段 | 内容 | 周次 | 日期 | 产出 |
 |---|---|---|---|---|
 | [0 · 编程起步](#阶段-0) | 可选 | 可选 · 2 周 | 开始前 | — |
+| [∥ · 数学基础](#并行轨道) | 微积分 8 周，为概率论打基础 | 并行 · M01–08 | 10/19 – 12/13 | 11 道自测题独立做对 9 道以上，衔接 Stat 110 |
 | [1 · LLM 基础](#阶段-1) | 看懂一次模型调用 | W01–05 | 10/19 – 11/22 | 项目 1 · 大模型 API Playground |
 | [2 · RAG](#阶段-2) | 把资料变成可检索、可引用的证据 | W06–11 | 11/23 – 1/3 | 项目 2 · RAG + Tool Calling Agent |
 | [3 · Agent 应用](#阶段-3) | 理解循环，再补齐状态、上下文与边界 | W12–18 | 1/4 – 2/21 | 项目 3 · 简化 Coding Agent |
@@ -95,6 +97,208 @@
 
 - [ ] 能说出 400、401、404、422、500 各自的含义
 - [ ] 能读懂 FastAPI 自动生成的接口文档
+
+---
+
+## 并行轨道
+
+### 数学基础：微积分 8 周，为概率论打基础
+
+`math.calculus`
+ · M01–08 · 10/19 – 12/13 · 每天 30–45 分钟
+ · 产出：**11 道自测题独立做对 9 道以上，衔接 Stat 110**
+
+> 8 周学完概率论需要的微积分：导数、积分、反常积分、级数、偏导与二重积分。只学概率会用到的部分，曲线曲面积分、微分方程等先跳过。
+
+和主线同一天开始，按自然周排，不随“学习节奏”变化。每天 30–45 分钟，每周 5 天，留 2 天机动补进度。
+
+**怎么学**
+
+- 每天按顺序：看视频 15–20 分钟 → 做题 15–20 分钟 → 写两三句总结
+- 完成标准：每周末能不看书独立做出本周的自测题
+- 做不出来就把下一周推迟几天，不要硬往前赶
+- 做错的题用 SymPy 算一遍，找到错在哪一步
+
+**资源**
+
+- [3Blue1Brown《Essence of Calculus》](https://www.youtube.com/playlist?list=PLZHQObOWTQDMsr9K-rj53DwVRMYO3t5Yr) — 建立直觉：每个主题开始前先看对应那集（有中文字幕）
+- [MIT OCW 18.01SC Single Variable Calculus](https://ocw.mit.edu/courses/18-01sc-single-variable-calculus-fall-2010/) — 单变量系统讲解：按主题挑 Unit 看，含讲座视频和习题课
+- [MIT OCW 18.02SC Multivariable Calculus](https://ocw.mit.edu/courses/18-02sc-multivariable-calculus-fall-2010/) — 多元：只看偏导数和二重积分
+- [OpenStax《Calculus》Vol 1](https://openstax.org/details/books/calculus-volume-1) — 免费教材：每节挑基础题 5–10 道，书后有奇数题答案
+- [OpenStax《Calculus》Vol 2](https://openstax.org/details/books/calculus-volume-2)
+- [OpenStax《Calculus》Vol 3](https://openstax.org/details/books/calculus-volume-3)
+- [SymPy 文档](https://docs.sympy.org/latest/index.html) — 做错时用它算一遍，定位错在哪一步
+
+#### M01 · 直觉 + 函数与极限 · 10/19 – 10/25
+
+第 1–2 周目标：理解“导数 = 瞬时变化率”，熟练求常见函数的导数。
+
+**本周用到**：[3Blue1Brown《Essence of Calculus》](https://www.youtube.com/playlist?list=PLZHQObOWTQDMsr9K-rj53DwVRMYO3t5Yr) · [OpenStax《Calculus》Vol 1](https://openstax.org/details/books/calculus-volume-1)
+
+**任务**
+
+- [ ] 3B1B 第 1–3 集：微积分的本质、导数的悖论、用几何推导求导公式
+- [ ] OpenStax Vol 1 第 2 章：极限（重点会算，不钻 ε-δ 定义）
+- [ ] 3B1B 第 7 集：极限与洛必达法则
+- [ ] OpenStax：极限计算基础题 10 道
+
+#### M02 · 求导 · 10/26 – 11/1
+
+**本周用到**：[3Blue1Brown《Essence of Calculus》](https://www.youtube.com/playlist?list=PLZHQObOWTQDMsr9K-rj53DwVRMYO3t5Yr) · [MIT OCW 18.01SC Single Variable Calculus](https://ocw.mit.edu/courses/18-01sc-single-variable-calculus-fall-2010/) · [OpenStax《Calculus》Vol 1](https://openstax.org/details/books/calculus-volume-1)
+
+**任务**
+
+- [ ] 3B1B 第 4–5 集：链式法则与乘积法则、自然常数 e
+- [ ] MIT 18.01SC Unit 1：Differentiation（导数定义、求导法则、链式法则）
+- [ ] 熟记导数表：xⁿ、eˣ、ln x、sin x、cos x
+- [ ] MIT 18.01SC Unit 2 中的最值部分：用导数求最大值、最小值
+- [ ] OpenStax Vol 1 第 3 章：求导基础题 15 道
+
+**自测**（不看书独立做出）
+
+- [ ] 求 $e^{-x^2}$ 的导数
+- [ ] 求 $x\ln x$ 的导数
+- [ ] 求 $x e^{-x}$ 在 $x>0$ 时的最大值
+
+<details><summary>答案</summary>
+
+- $e^{-x^2}$ 的导数：$-2x\,e^{-x^2}$
+- $x\ln x$ 的导数：$\ln x + 1$
+- $x e^{-x}$ 在 $x>0$ 时的最大值：$x=1$ 时取到，值为 $1/e$
+
+</details>
+
+#### M03 · 定积分与基本积分 · 11/2 – 11/8
+
+第 3–4 周目标：理解“积分 = 累加 / 面积”，熟练掌握换元和分部积分。这是整个计划最重要的两周，概率里的期望和方差几乎都要靠积分算。
+
+**本周用到**：[3Blue1Brown《Essence of Calculus》](https://www.youtube.com/playlist?list=PLZHQObOWTQDMsr9K-rj53DwVRMYO3t5Yr) · [MIT OCW 18.01SC Single Variable Calculus](https://ocw.mit.edu/courses/18-01sc-single-variable-calculus-fall-2010/) · [OpenStax《Calculus》Vol 1](https://openstax.org/details/books/calculus-volume-1)
+
+**任务**
+
+- [ ] 3B1B 第 8–9 集：积分与微积分基本定理、面积和斜率的关系
+- [ ] MIT 18.01SC Unit 3：Integration（不定积分、定积分、基本定理）
+- [ ] 熟记基本积分表（就是导数表反过来）
+- [ ] OpenStax Vol 1 第 5 章：基本积分题 15 道
+
+#### M04 · 换元与分部积分 · 11/9 – 11/15
+
+**本周用到**：[MIT OCW 18.01SC Single Variable Calculus](https://ocw.mit.edu/courses/18-01sc-single-variable-calculus-fall-2010/) · [OpenStax《Calculus》Vol 1](https://openstax.org/details/books/calculus-volume-1) · [OpenStax《Calculus》Vol 2](https://openstax.org/details/books/calculus-volume-2) · [SymPy 文档](https://docs.sympy.org/latest/index.html)
+
+**任务**
+
+- [ ] MIT 18.01SC Unit 4：Techniques of Integration（只看换元和分部积分）
+- [ ] OpenStax：Vol 1 换元积分题 10 道、Vol 2 第 3 章分部积分题 10 道
+- [ ] 用 SymPy 核对做错的题
+
+**自测**（不看书独立做出）
+
+- [ ] 计算 $\int_0^1 2x\,dx$
+- [ ] 计算 $\int_0^1 x e^{x^2}\,dx$
+- [ ] 计算 $\int_0^1 x e^{x}\,dx$（以后算期望的典型形式）
+
+<details><summary>答案</summary>
+
+- $\int_0^1 2x\,dx$：$1$
+- $\int_0^1 x e^{x^2}\,dx$：$(e-1)/2$
+- $\int_0^1 x e^{x}\,dx$（以后算期望的典型形式）：$1$
+
+</details>
+
+#### M05 · 反常积分 · 11/16 – 11/22
+
+目标：会算积分区间到无穷的积分。指数分布、正态分布等连续分布全靠它。
+
+**本周用到**：[MIT OCW 18.01SC Single Variable Calculus](https://ocw.mit.edu/courses/18-01sc-single-variable-calculus-fall-2010/) · [OpenStax《Calculus》Vol 2](https://openstax.org/details/books/calculus-volume-2)
+
+**任务**
+
+- [ ] MIT 18.01SC Unit 5 中的 Improper Integrals：反常积分的定义与计算
+- [ ] 理解“收敛”：积分结果是一个有限的数
+- [ ] 练习 $\int_0^\infty e^{-\lambda x}\,dx$ 这一类，$\lambda$ 换成不同的数多算几遍
+- [ ] 了解高斯积分，只需记住结论：$\int_{-\infty}^{\infty} e^{-x^2/2}\,dx = \sqrt{2\pi}$
+- [ ] OpenStax Vol 2 第 3 章 Improper Integrals：8–10 道
+
+**自测**（不看书独立做出）
+
+- [ ] 计算 $\int_0^\infty 2e^{-2x}\,dx$（指数分布的概率总和为 1）
+- [ ] 计算 $\int_0^\infty x\cdot 2e^{-2x}\,dx$（指数分布的期望）
+
+<details><summary>答案</summary>
+
+- $\int_0^\infty 2e^{-2x}\,dx$（指数分布的概率总和为 1）：$1$
+- $\int_0^\infty x\cdot 2e^{-2x}\,dx$（指数分布的期望）：$1/2$
+
+</details>
+
+#### M06 · 级数与泰勒展开 · 11/23 – 11/29
+
+目标：会用等比级数求和，记住 eˣ 的泰勒展开。几何分布、泊松分布的计算都要用。
+
+**本周用到**：[3Blue1Brown《Essence of Calculus》](https://www.youtube.com/playlist?list=PLZHQObOWTQDMsr9K-rj53DwVRMYO3t5Yr) · [MIT OCW 18.01SC Single Variable Calculus](https://ocw.mit.edu/courses/18-01sc-single-variable-calculus-fall-2010/) · [OpenStax《Calculus》Vol 2](https://openstax.org/details/books/calculus-volume-2)
+
+**任务**
+
+- [ ] MIT 18.01SC Unit 5 中的级数部分（收敛判别法只需了解）
+- [ ] 等比级数求和，以及对它求导得到的公式（OpenStax Vol 2 第 5 章）
+- [ ] 3B1B 第 10–11 集：高阶导数、泰勒级数
+- [ ] OpenStax Vol 2 第 6 章：泰勒级数 5 道
+- [ ] 记住两个结论：$\sum_{k=0}^{\infty} r^k = \frac{1}{1-r}\ (|r|<1)$；$e^{\lambda} = \sum_{k=0}^{\infty} \frac{\lambda^k}{k!}$
+
+**自测**（不看书独立做出）
+
+- [ ] 计算 $\sum_{k=0}^{\infty} \left(\tfrac{1}{2}\right)^k$
+- [ ] 计算 $\sum_{k=0}^{\infty} e^{-3}\frac{3^k}{k!}$（泊松分布的概率总和为 1）
+
+<details><summary>答案</summary>
+
+- $\sum_{k=0}^{\infty} \left(\tfrac{1}{2}\right)^k$：$2$
+- $\sum_{k=0}^{\infty} e^{-3}\frac{3^k}{k!}$（泊松分布的概率总和为 1）：$1$
+
+</details>
+
+#### M07 · 多元函数 · 11/30 – 12/6
+
+第 7–8 周目标：会算简单的二重积分，为多元分布（两个随机变量一起看）做准备。
+
+**本周用到**：[MIT OCW 18.02SC Multivariable Calculus](https://ocw.mit.edu/courses/18-02sc-multivariable-calculus-fall-2010/) · [OpenStax《Calculus》Vol 3](https://openstax.org/details/books/calculus-volume-3)
+
+**任务**
+
+- [ ] MIT 18.02SC 偏导数部分（Partial Derivatives，把其他变量当常数求导）
+- [ ] MIT 18.02SC 二重积分部分（Double Integrals，含义与计算）
+- [ ] 交换积分次序（概率里经常要用）
+- [ ] OpenStax Vol 3：第 4 章偏导 8 道、第 5 章二重积分 8 道
+
+#### M08 · 极坐标 + 总复习 · 12/7 – 12/13
+
+**本周用到**：[MIT OCW 18.02SC Multivariable Calculus](https://ocw.mit.edu/courses/18-02sc-multivariable-calculus-fall-2010/)
+
+**任务**
+
+- [ ] MIT 18.02SC：二重积分的极坐标换元
+- [ ] 看懂用极坐标证明高斯积分（第 5 周记住的那个结论）
+- [ ] 把前 7 周的自测题全部重做一遍
+- [ ] 错得最多的主题，回去补 5 道题
+
+**自测**（不看书独立做出）
+
+- [ ] 计算 $\int_0^1 \int_0^x 1\,dy\,dx$（两个独立均匀分布 $X$、$Y$，求 $P(Y<X)$）
+
+<details><summary>答案</summary>
+
+- $\int_0^1 \int_0^x 1\,dy\,dx$（两个独立均匀分布 $X$、$Y$，求 $P(Y<X)$）：$1/2$
+
+</details>
+
+#### 衔接 Stat 110
+
+第 9 周起开始 Stat 110 第 1 讲，配合 Blitzstein & Hwang《Introduction to Probability》第 1 章。前几讲是排列组合和计数，几乎不用微积分，正好缓冲；讲到连续随机变量时，这 8 周的积分就用上了。
+
+- [ ] 8 周的 11 道自测题，不看答案独立做对 9 道以上（可以开始 Stat 110 的信号）
+
+- [Stat 110 课程主页](https://stat110.hsites.harvard.edu/) — 讲座视频、习题和 edX 课程入口
+- [Blitzstein & Hwang《Introduction to Probability》](http://probabilitybook.net/) — 作者提供的免费在线版
 
 ---
 
@@ -858,4 +1062,4 @@ RAG 能为回答补充依据，但仍然可能答错，所以检索效果和生�
 
 ---
 
-链接指向的文档会更新，字段名和事件结构以你实际使用的 API 文档为准。
+数学基础轨道整理自《微积分 8 周学习计划（为概率论打基础）》，资源链接为补充。链接指向的文档会更新，字段名和事件结构以你实际使用的 API 文档为准。

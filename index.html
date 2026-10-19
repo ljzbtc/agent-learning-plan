@@ -156,6 +156,19 @@ h1{font-family:var(--f-display);font-weight:900;font-size:clamp(2rem,5.2vw,3.1re
 .res .rn{display:block;font-size:12.5px;color:var(--ink-3)}
 .items{display:grid}
 
+.ck>div{min-width:0}
+.ck i,.links i{font-family:"Cambria Math","Times New Roman",Times,serif;font-style:italic;font-size:1.05em}
+.op{display:inline-flex;align-items:center;gap:1px;margin-right:1px}
+.lim{display:inline-flex;flex-direction:column;font-size:.66em;line-height:1.05;vertical-align:middle}
+.ans{margin-top:2px;font-size:13px}
+.ans summary{cursor:pointer;color:var(--accent);width:max-content}
+.ans div{margin-top:2px;color:var(--ink-2)}
+.links{margin:0;padding-left:1.15em;display:grid;gap:4px;font-size:14px}
+.links li{overflow-wrap:anywhere}
+.links .rn{display:block;font-size:12.5px;color:var(--ink-3)}
+.wk.m{background:var(--accent-soft);color:var(--accent)}
+.tr.par .tr-name::after{content:"并行";font-size:11px;font-weight:400;color:var(--accent);border:1px solid currentColor;border-radius:4px;padding:0 5px;margin-left:8px}
+.para{margin:14px 0 0;font-size:14px;color:var(--ink-2)}
 .hide-full .week.full{display:none}
 .tools{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
 .tools label{font-size:13px}
@@ -217,7 +230,7 @@ footer p{margin:0;max-width:52em}
 
   <section class="sec" id="overview">
     <h2>路线总览</h2>
-    <p class="lede">六个阶段按顺序推进，每个阶段以一个能交付的项目收尾。Prompt Engineering 不单独成段，放在阶段 1 学，之后每个项目都要用。</p>
+    <p class="lede">六个阶段按顺序推进，每个阶段以一个能交付的项目收尾。Prompt Engineering 不单独成段，放在阶段 1 学，之后每个项目都要用。另有一条并行的数学基础轨道（微积分 8 周，为概率论打基础），和主线同一天开始。</p>
     <div class="trace" id="trace"></div>
   </section>
 
@@ -236,7 +249,8 @@ footer p{margin:0;max-width:52em}
           <li><b>周一到周四</b>，每晚 1.5–2 小时：读一个主题的文档，做对应的小实验</li>
           <li><b>周五</b>，1 小时：回答本周自测题，写一页学习笔记</li>
           <li><b>周末</b>，6–8 小时：完成“动手”任务；项目周全部用来写项目</li>
-          <li>跟不上就在顶部切换节奏，所有日期会自动重排</li>
+          <li><b>前 8 周加数学</b>：每天再加 30–45 分钟微积分，每周 5 天，约 3 小时</li>
+          <li>主线跟不上就在顶部切换节奏，日期会自动重排；数学轨道按自然周排，不受影响</li>
         </ul>
       </div>
       <div class="box">
@@ -259,6 +273,7 @@ footer p{margin:0;max-width:52em}
 
   <footer>
     <p>知识点、学习资料和项目验收要求来自 <a href="https://x.com/chasen_liao/status/2109081301819310578" target="_blank" rel="noopener">Chasen 的原文</a>（原文整理自一份《Agent 工程师入门指南》）。周次安排、动手练习和自测题是按原文内容拆出来的执行版本；标“补充”的资料原文没有给出。</p>
+    <p>数学基础轨道整理自《微积分 8 周学习计划（为概率论打基础）》，资源链接为补充。</p>
     <p>链接指向的文档会更新，字段名和事件结构以你实际使用的 API 文档为准。</p>
   </footer>
 </div>
@@ -267,6 +282,20 @@ footer p{margin:0;max-width:52em}
 (function(){
 'use strict';
 var L=function(t,u,n,x){return {t:t,u:u,n:n||'',x:!!x};};
+/* math markup helpers (static strings only) */
+var v=function(x){return '<i>'+x+'</i>';};
+var EX=function(e){return v('e')+'<sup>'+e+'</sup>';};
+var LIM=function(op,lo,hi){return '<span class="op">'+op+'<span class="lim"><span>'+hi+'</span><span>'+lo+'</span></span></span>';};
+var INT=function(lo,hi){return LIM('∫',lo,hi);};
+var SUM=function(lo,hi){return LIM('Σ',lo,hi);};
+var DX=' d'+v('x');
+var R3B=L('3Blue1Brown《Essence of Calculus》','https://www.youtube.com/playlist?list=PLZHQObOWTQDMsr9K-rj53DwVRMYO3t5Yr','建立直觉：每个主题开始前先看对应那集（有中文字幕）');
+var R1801=L('MIT OCW 18.01SC Single Variable Calculus','https://ocw.mit.edu/courses/18-01sc-single-variable-calculus-fall-2010/','单变量系统讲解：按主题挑 Unit 看，含讲座视频和习题课');
+var R1802=L('MIT OCW 18.02SC Multivariable Calculus','https://ocw.mit.edu/courses/18-02sc-multivariable-calculus-fall-2010/','多元：只看偏导数和二重积分');
+var ROS1=L('OpenStax《Calculus》Vol 1','https://openstax.org/details/books/calculus-volume-1','免费教材：每节挑基础题 5–10 道，书后有奇数题答案');
+var ROS2=L('OpenStax《Calculus》Vol 2','https://openstax.org/details/books/calculus-volume-2');
+var ROS3=L('OpenStax《Calculus》Vol 3','https://openstax.org/details/books/calculus-volume-3');
+var RSYM=L('SymPy 文档','https://docs.sympy.org/latest/index.html','做错时用它算一遍，定位错在哪一步');
 
 var PLAN=[
 {id:'p0',no:'0',tag:'env.setup',name:'编程起步',sub:'可选',optional:true,
@@ -284,6 +313,68 @@ var PLAN=[
    act:['用 FastAPI 写一个待办事项接口（新增、查询），分别用 curl 和 Python 调用','故意发送格式错误的 JSON，观察返回的状态码和错误信息'],
    check:['能说出 400、401、404、422、500 各自的含义','能读懂 FastAPI 自动生成的接口文档']}
  ]},
+
+{id:'m1',no:'∥',tag:'math.calculus',name:'数学基础',sub:'微积分 8 周，为概率论打基础',parallel:true,actLabel:'任务',checkHint:'不看书独立做出',
+ goal:'8 周学完概率论需要的微积分：导数、积分、反常积分、级数、偏导与二重积分。只学概率会用到的部分，曲线曲面积分、微分方程等先跳过。',
+ note:'和主线同一天开始，按自然周排，不随“学习节奏”变化。每天 30–45 分钟，每周 5 天，留 2 天机动补进度。',
+ out:'11 道自测题独立做对 9 道以上，衔接 Stat 110',
+ how:['每天按顺序：看视频 15–20 分钟 → 做题 15–20 分钟 → 写两三句总结','完成标准：每周末能不看书独立做出本周的自测题','做不出来就把下一周推迟几天，不要硬往前赶','做错的题用 SymPy 算一遍，找到错在哪一步'],
+ res:[R3B,R1801,R1802,ROS1,ROS2,ROS3,RSYM],
+ weeks:[
+  {id:'m1w1',span:1,title:'直觉 + 函数与极限',
+   lead:'第 1–2 周目标：理解“导数 = 瞬时变化率”，熟练求常见函数的导数。',
+   act:['3B1B 第 1–3 集：微积分的本质、导数的悖论、用几何推导求导公式','OpenStax Vol 1 第 2 章：极限（重点会算，不钻 ε-δ 定义）','3B1B 第 7 集：极限与洛必达法则','OpenStax：极限计算基础题 10 道'],
+   links:[R3B,ROS1]},
+  {id:'m1w2',span:1,title:'求导',
+   act:['3B1B 第 4–5 集：链式法则与乘积法则、自然常数 e','MIT 18.01SC Unit 1：Differentiation（导数定义、求导法则、链式法则）','熟记导数表：xⁿ、eˣ、ln x、sin x、cos x','MIT 18.01SC Unit 2 中的最值部分：用导数求最大值、最小值','OpenStax Vol 1 第 3 章：求导基础题 15 道'],
+   links:[R3B,R1801,ROS1],
+   check:[
+    {h:'求 '+EX('−'+v('x')+'²')+' 的导数',t:'求 $e^{-x^2}$ 的导数',a:'−2'+v('x')+'·'+EX('−'+v('x')+'²'),at:'$-2x\\,e^{-x^2}$'},
+    {h:'求 '+v('x')+'·ln '+v('x')+' 的导数',t:'求 $x\\ln x$ 的导数',a:'ln '+v('x')+' + 1',at:'$\\ln x + 1$'},
+    {h:'求 '+v('x')+'·'+EX('−'+v('x'))+' 在 '+v('x')+' &gt; 0 时的最大值',t:'求 $x e^{-x}$ 在 $x>0$ 时的最大值',a:v('x')+' = 1 时取到，值为 1/'+v('e'),at:'$x=1$ 时取到，值为 $1/e$'}]},
+  {id:'m1w3',span:1,title:'定积分与基本积分',
+   lead:'第 3–4 周目标：理解“积分 = 累加 / 面积”，熟练掌握换元和分部积分。这是整个计划最重要的两周，概率里的期望和方差几乎都要靠积分算。',
+   act:['3B1B 第 8–9 集：积分与微积分基本定理、面积和斜率的关系','MIT 18.01SC Unit 3：Integration（不定积分、定积分、基本定理）','熟记基本积分表（就是导数表反过来）','OpenStax Vol 1 第 5 章：基本积分题 15 道'],
+   links:[R3B,R1801,ROS1]},
+  {id:'m1w4',span:1,title:'换元与分部积分',
+   act:['MIT 18.01SC Unit 4：Techniques of Integration（只看换元和分部积分）','OpenStax：Vol 1 换元积分题 10 道、Vol 2 第 3 章分部积分题 10 道','用 SymPy 核对做错的题'],
+   links:[R1801,ROS1,ROS2,RSYM],
+   check:[
+    {h:'计算 '+INT('0','1')+' 2'+v('x')+DX,t:'计算 $\\int_0^1 2x\\,dx$',a:'1',at:'$1$'},
+    {h:'计算 '+INT('0','1')+' '+v('x')+EX(v('x')+'²')+DX,t:'计算 $\\int_0^1 x e^{x^2}\\,dx$',a:'('+v('e')+' − 1)/2',at:'$(e-1)/2$'},
+    {h:'计算 '+INT('0','1')+' '+v('x')+EX(v('x'))+DX+'（以后算期望的典型形式）',t:'计算 $\\int_0^1 x e^{x}\\,dx$（以后算期望的典型形式）',a:'1',at:'$1$'}]},
+  {id:'m1w5',span:1,title:'反常积分',
+   lead:'目标：会算积分区间到无穷的积分。指数分布、正态分布等连续分布全靠它。',
+   act:['MIT 18.01SC Unit 5 中的 Improper Integrals：反常积分的定义与计算','理解“收敛”：积分结果是一个有限的数',
+    {h:'练习 '+INT('0','∞')+' '+EX('−λ'+v('x'))+DX+' 这一类，λ 换成不同的数多算几遍',t:'练习 $\\int_0^\\infty e^{-\\lambda x}\\,dx$ 这一类，$\\lambda$ 换成不同的数多算几遍'},
+    {h:'了解高斯积分，只需记住结论：'+INT('−∞','∞')+' '+EX('−'+v('x')+'²/2')+DX+' = √(2π)',t:'了解高斯积分，只需记住结论：$\\int_{-\\infty}^{\\infty} e^{-x^2/2}\\,dx = \\sqrt{2\\pi}$'},
+    'OpenStax Vol 2 第 3 章 Improper Integrals：8–10 道'],
+   links:[R1801,ROS2],
+   check:[
+    {h:'计算 '+INT('0','∞')+' 2'+EX('−2'+v('x'))+DX+'（指数分布的概率总和为 1）',t:'计算 $\\int_0^\\infty 2e^{-2x}\\,dx$（指数分布的概率总和为 1）',a:'1',at:'$1$'},
+    {h:'计算 '+INT('0','∞')+' '+v('x')+'·2'+EX('−2'+v('x'))+DX+'（指数分布的期望）',t:'计算 $\\int_0^\\infty x\\cdot 2e^{-2x}\\,dx$（指数分布的期望）',a:'1/2',at:'$1/2$'}]},
+  {id:'m1w6',span:1,title:'级数与泰勒展开',
+   lead:'目标：会用等比级数求和，记住 eˣ 的泰勒展开。几何分布、泊松分布的计算都要用。',
+   act:['MIT 18.01SC Unit 5 中的级数部分（收敛判别法只需了解）','等比级数求和，以及对它求导得到的公式（OpenStax Vol 2 第 5 章）','3B1B 第 10–11 集：高阶导数、泰勒级数','OpenStax Vol 2 第 6 章：泰勒级数 5 道',
+    {h:'记住两个结论：'+SUM(v('k')+'=0','∞')+' '+v('r')+'<sup>'+v('k')+'</sup> = 1/(1 − '+v('r')+')，|'+v('r')+'| &lt; 1；'+EX('λ')+' = '+SUM(v('k')+'=0','∞')+' λ<sup>'+v('k')+'</sup>/'+v('k')+'!',t:'记住两个结论：$\\sum_{k=0}^{\\infty} r^k = \\frac{1}{1-r}\\ (|r|<1)$；$e^{\\lambda} = \\sum_{k=0}^{\\infty} \\frac{\\lambda^k}{k!}$'}],
+   links:[R3B,R1801,ROS2],
+   check:[
+    {h:'计算 '+SUM(v('k')+'=0','∞')+' (1/2)<sup>'+v('k')+'</sup>',t:'计算 $\\sum_{k=0}^{\\infty} \\left(\\tfrac{1}{2}\\right)^k$',a:'2',at:'$2$'},
+    {h:'计算 '+SUM(v('k')+'=0','∞')+' '+EX('−3')+'·3<sup>'+v('k')+'</sup>/'+v('k')+'!（泊松分布的概率总和为 1）',t:'计算 $\\sum_{k=0}^{\\infty} e^{-3}\\frac{3^k}{k!}$（泊松分布的概率总和为 1）',a:'1',at:'$1$'}]},
+  {id:'m1w7',span:1,title:'多元函数',
+   lead:'第 7–8 周目标：会算简单的二重积分，为多元分布（两个随机变量一起看）做准备。',
+   act:['MIT 18.02SC 偏导数部分（Partial Derivatives，把其他变量当常数求导）','MIT 18.02SC 二重积分部分（Double Integrals，含义与计算）','交换积分次序（概率里经常要用）','OpenStax Vol 3：第 4 章偏导 8 道、第 5 章二重积分 8 道'],
+   links:[R1802,ROS3]},
+  {id:'m1w8',span:1,title:'极坐标 + 总复习',
+   act:['MIT 18.02SC：二重积分的极坐标换元','看懂用极坐标证明高斯积分（第 5 周记住的那个结论）','把前 7 周的自测题全部重做一遍','错得最多的主题，回去补 5 道题'],
+   links:[R1802],
+   check:[
+    {h:'计算 '+INT('0','1')+INT('0',v('x'))+' 1 d'+v('y')+DX+'（两个独立均匀分布 '+v('X')+'、'+v('Y')+'，求 '+v('P')+'('+v('Y')+' &lt; '+v('X')+')）',t:'计算 $\\int_0^1 \\int_0^x 1\\,dy\\,dx$（两个独立均匀分布 $X$、$Y$，求 $P(Y<X)$）',a:'1/2',at:'$1/2$'}]}
+ ],
+ bridge:{title:'衔接 Stat 110',
+   text:'第 9 周起开始 Stat 110 第 1 讲，配合 Blitzstein & Hwang《Introduction to Probability》第 1 章。前几讲是排列组合和计数，几乎不用微积分，正好缓冲；讲到连续随机变量时，这 8 周的积分就用上了。',
+   items:['8 周的 11 道自测题，不看答案独立做对 9 道以上（可以开始 Stat 110 的信号）'],
+   links:[L('Stat 110 课程主页','https://stat110.hsites.harvard.edu/','讲座视频、习题和 edX 课程入口'),L('Blitzstein & Hwang《Introduction to Probability》','http://probabilitybook.net/','作者提供的免费在线版')]}},
 
 {id:'p1',no:'1',tag:'llm.request',name:'LLM 基础',sub:'看懂一次模型调用',
  goal:'能完整解释一次请求到响应发生了什么，能稳定处理流式输出、结构化输出和工具调用。后面所有内容都建在这一层上。',
@@ -492,9 +583,25 @@ function ckRow(id,bucket,content,isLink,label){
   var cid='c_'+id.replace(/[^a-zA-Z0-9]/g,'_');
   var input=el('input',{type:'checkbox',id:cid,'data-id':id});
   if(isLink) input.setAttribute('aria-label','已读：'+label);
-  var row=el('div',{class:'ck'},input,isLink?content:el('label',{for:cid},content));
+  var body;
+  if(isLink) body=content;
+  else{
+    var lab=el('label',{for:cid},rich(content));
+    if(content&&content.a!=null){
+      var ad=el('div'); ad.innerHTML='答案：'+content.a;
+      body=el('div',null,lab,el('details',{class:'ans'},el('summary',null,'看答案'),ad));
+    } else body=lab;
+  }
+  var row=el('div',{class:'ck'},input,body);
   ALL.push({id:id,input:input,row:row}); bucket.push(id);
   return row;
+}
+function rich(c){
+  if(c&&typeof c==='object'&&!c.nodeType){var s=el('span');s.innerHTML=c.h;return s;}
+  return c;
+}
+function linkList(rs){
+  return el('ul',{class:'links'},rs.map(function(r){return el('li',null,el('a',{href:r.u,target:'_blank',rel:'noopener'},r.t),r.n?el('span',{class:'rn'},r.n):null);}));
 }
 function resNode(r){
   return el('span',{class:'res'},
@@ -517,7 +624,7 @@ function build(){
     var bar=el('div',{class:'bar'},el('i'));
     var meta=el('div',{class:'ph-meta'},p.ondemand?el('span',null,'不排进日程'):[wcount,dates],p.out?el('span',{class:'out'},'产出：'+p.out):null);
     var head=el('header',{class:'ph'},
-      el('p',{class:'ph-eye mono'},'阶段 '+p.no+' · ',el('b',null,p.tag)),
+      el('p',{class:'ph-eye mono'},p.parallel?'并行轨道 · ':'阶段 '+p.no+' · ',el('b',null,p.tag)),
       el('h2',null,p.name,el('small',null,p.sub)),
       el('p',{class:'ph-goal'},p.goal),
       p.note?el('p',{class:'ph-note'},p.note):null,
@@ -526,9 +633,16 @@ function build(){
     var sec=el('section',{class:'phase',id:p.id},head,weeksBox);
     ph.sec=sec; ph.dates=dates; ph.wcount=wcount; ph.bar=bar.firstChild;
 
+    if(p.parallel){
+      var hl=el('div',{class:'col-l'}), hr=el('div',{class:'col-r'});
+      hl.append.apply(hl,group('怎么学',null,[el('ul',{class:'topics'},p.how.map(function(t){return el('li',null,t);}))]));
+      hr.append.apply(hr,group('资源',null,[linkList(p.res)]));
+      weeksBox.append(el('div',{class:'week'},el('div',{class:'wbody',style:'border-top:0'},hl,hr)));
+    }
+
     p.weeks.forEach(function(w){
       var bucket=[];
-      var label=el('span',{class:'wk mono'});
+      var label=el('span',{class:'wk mono'+(p.parallel?' m':'')});
       var wdates=el('span',{class:'dates mono'});
       var now=el('span',{class:'nowpill',hidden:true},'本周');
       var title=el('span',{class:'title'},w.project?el('span',{class:'pjt'},w.project):null,w.title,now);
@@ -539,12 +653,13 @@ function build(){
       if(w.lead) left.append(el('p',{class:'lead'},w.lead));
       if(w.topics){left.append.apply(left,group('学什么',null,[el('ul',{class:'topics'},w.topics.map(function(t){return el('li',null,t);}))]));}
       if(w.note) left.append(el('p',{class:'note'},w.note));
+      if(w.links) left.append.apply(left,group('本周用到',null,[linkList(w.links)]));
       if(w.read&&w.read.length){
         var target=w.project?left:right;
         target.append.apply(target,group('读什么','读完勾选',w.read.map(function(r,i){return ckRow(w.id+'.r'+i,bucket,resNode(r),true,r.t);})));
       }
-      if(w.act) right.append.apply(right,group('动手',null,w.act.map(function(t,i){return ckRow(w.id+'.d'+i,bucket,t);})));
-      if(w.check) right.append.apply(right,group('自测','能做到再勾',w.check.map(function(t,i){return ckRow(w.id+'.c'+i,bucket,t);})));
+      if(w.act) right.append.apply(right,group(p.actLabel||'动手',null,w.act.map(function(t,i){return ckRow(w.id+'.d'+i,bucket,t);})));
+      if(w.check) right.append.apply(right,group('自测',p.checkHint||'能做到再勾',w.check.map(function(t,i){return ckRow(w.id+'.c'+i,bucket,t);})));
       if(w.req) right.append.apply(right,group('要做',null,w.req.map(function(t,i){return ckRow(w.id+'.q'+i,bucket,t);})));
       if(w.accept) right.append.apply(right,group('验收',null,w.accept.map(function(t,i){return ckRow(w.id+'.a'+i,bucket,t);})));
       var det=el('details',{class:'week'+(w.project?' project':''),id:'w-'+w.id},sum,el('div',{class:'wbody'},left,right));
@@ -554,6 +669,15 @@ function build(){
       var ref={w:w,p:p,det:det,label:label,dates:wdates,cnt:cnt,now:now,items:bucket};
       WEEKS.push(ref); ph.weekRefs.push(ref); bucket.forEach(function(id){ph.items.push(id);});
     });
+
+    if(p.bridge){
+      var bb=[], bl=el('div',{class:'col-l'}), br=el('div',{class:'col-r'});
+      bl.append(el('h4',null,p.bridge.title),el('p',{class:'para',style:'margin-top:0'},p.bridge.text));
+      bl.append.apply(bl,group('资源',null,[linkList(p.bridge.links)]));
+      br.append.apply(br,group('出口标准',null,p.bridge.items.map(function(t,i){return ckRow(p.id+'.b'+i,bb,t);})));
+      weeksBox.append(el('div',{class:'week'},el('div',{class:'wbody',style:'border-top:0'},bl,br)));
+      bb.forEach(function(id){ph.items.push(id);});
+    }
 
     if(p.ondemand){
       var bucket6=[]; var left6=el('div',{class:'col-l'}), right6=el('div',{class:'col-r'});
@@ -566,7 +690,7 @@ function build(){
 
     /* overview row */
     var tw=el('span',{class:'tr-when mono'}); var tb=el('span',{class:'tr-bar bar'},el('i')); var tp=el('span',{class:'tr-pct mono'});
-    var row=el('a',{class:'tr'+(p.optional?' opt':''),href:'#'+p.id},el('span',{class:'tr-tag mono'},p.tag),el('span',{class:'tr-name'},p.name,el('small',null,p.sub)),tw,tb,tp);
+    var row=el('a',{class:'tr'+(p.optional?' opt':'')+(p.parallel?' par':''),href:'#'+p.id},el('span',{class:'tr-tag mono'},p.tag),el('span',{class:'tr-name'},p.name,el('small',null,p.sub)),tw,tb,tp);
     trace.append(row); ph.trow=row; ph.twhen=tw; ph.tbar=tb.firstChild; ph.tpct=tp;
     /* chip */
     var cp=el('span',{class:'mono'});
@@ -585,11 +709,12 @@ function unitStart(n){return addDays(parseDate(state.start),Math.round(n*7*state
 function unitEnd(n){return addDays(parseDate(state.start),Math.round(n*7*state.pace)-1);}
 function wlabel(a,span){return span>1?'W'+pad(a+1)+'–'+pad(a+span):'W'+pad(a+1);}
 
-var TOTAL=0, CURRENT=null;
+var TOTAL=0, CURRENT=null, CURRENT_M=null, MEND=null;
 function layout(){
   var n=0;
   PLAN.forEach(function(p){
     var ph=PH[p.id]; ph.hidden=!!(p.optional&&!state.p0);
+    if(p.parallel){ ph.weekRefs.forEach(function(r,i){r.n=i;}); return; }
     if(ph.hidden||p.ondemand) return;
     ph.n0=n; ph.weekRefs.forEach(function(r){r.n=n;n+=r.w.span;}); ph.n1=n;
   });
@@ -602,7 +727,7 @@ function pct(a,b){return b?Math.round(a*100/b):0;}
 function applyState(){
   layout();
   var today=new Date(); today=new Date(today.getFullYear(),today.getMonth(),today.getDate());
-  CURRENT=null;
+  CURRENT=null; CURRENT_M=null; MEND=null;
   ALL.forEach(function(it){var on=!!state.done[it.id];it.input.checked=on;it.row.classList.toggle('on',on);});
   var allDone=0, allTot=0;
   PLAN.forEach(function(p){
@@ -614,6 +739,22 @@ function applyState(){
     if(p.ondemand){ ph.twhen.textContent='按需'; return; }
     if(ph.hidden) return;
     allDone+=d; allTot+=t;
+    if(p.parallel){
+      var st=parseDate(state.start), mc=ph.weekRefs.length; MEND=addDays(st,mc*7-1);
+      ph.dates.textContent=md(st)+' – '+md(MEND);
+      ph.wcount.textContent=mc+' 周 · 每天 30–45 分钟';
+      ph.twhen.textContent='M01–'+pad(mc)+' · '+md(st)+'–'+md(MEND);
+      ph.weekRefs.forEach(function(r){
+        var ws=addDays(st,r.n*7), we=addDays(st,r.n*7+6);
+        r.label.textContent='M'+pad(r.n+1);
+        r.dates.textContent=md(ws)+' – '+md(we);
+        var wd=countDone(r.items); r.cnt.textContent=wd+'/'+r.items.length;
+        r.det.classList.toggle('full',wd===r.items.length);
+        var isNow=today>=ws&&today<=we; r.det.classList.toggle('now',isNow); r.now.hidden=!isNow;
+        if(isNow) CURRENT_M=r;
+      });
+      return;
+    }
     var s=unitStart(ph.n0), e=unitEnd(ph.n1), weeks=Math.round((ph.n1-ph.n0)*state.pace*10)/10;
     ph.dates.textContent=md(s)+' – '+md(e);
     ph.wcount.textContent=weeks+' 周';
@@ -630,6 +771,8 @@ function applyState(){
   });
   /* stats */
   var start=parseDate(state.start), end=unitEnd(TOTAL);
+  if(MEND&&MEND>end) end=MEND;
+  var mt=CURRENT_M?' · 数学：'+CURRENT_M.w.title:'';
   var calWeeks=Math.round(TOTAL*state.pace*10)/10;
   $('s-weeks').textContent=calWeeks+' 周';
   $('s-range').textContent=iso(start)+' 起';
@@ -639,14 +782,14 @@ function applyState(){
   $('s-pct').textContent=p+'%';
   $('s-done').textContent=allDone+' / '+allTot+' 项（不含进阶）';
   var nb=$('b-now');
-  if(CURRENT){ $('s-now-w').textContent=wlabel(CURRENT.n,CURRENT.w.span); $('s-now').textContent=CURRENT.w.title; nb.disabled=false; nb.textContent='跳到本周'; }
-  else if(today<start){ var days=Math.round((start-today)/86400000); var first=firstVisibleWeek(); $('s-now-w').textContent=days+' 天后'; $('s-now').textContent='从 '+(first?first.w.title:'')+' 开始'; nb.disabled=false; nb.textContent='跳到第一周'; }
+  if(CURRENT){ $('s-now-w').textContent=wlabel(CURRENT.n,CURRENT.w.span); $('s-now').textContent=CURRENT.w.title+mt; nb.disabled=false; nb.textContent='跳到本周'; }
+  else if(today<start){ var days=Math.round((start-today)/86400000); var first=firstVisibleWeek(); $('s-now-w').textContent=days+' 天后'; $('s-now').textContent='从 '+(first?first.w.title:'')+' 开始，数学轨道同步开始'; nb.disabled=false; nb.textContent='跳到第一周'; }
   else { $('s-now-w').textContent='已结束'; $('s-now').textContent='计划周期已过，可以调整开始日期'; nb.disabled=true; nb.textContent='跳到本周'; }
   /* controls */
   $('f-start').value=state.start; $('f-pace').value=String(state.pace); $('f-p0').checked=state.p0; $('f-hide').checked=ui.hideFull;
   $('phases').classList.toggle('hide-full',ui.hideFull);
 }
-function firstVisibleWeek(){for(var i=0;i<WEEKS.length;i++){if(!PH[WEEKS[i].p.id].hidden)return WEEKS[i];}return null;}
+function firstVisibleWeek(){for(var i=0;i<WEEKS.length;i++){if(!PH[WEEKS[i].p.id].hidden&&!WEEKS[i].p.parallel)return WEEKS[i];}return null;}
 
 /* ---------- persistence ---------- */
 var sync={ref:null,writing:false,again:false,dirty:false,timer:null,retried:false};
